@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.7.34221.43
+VisualStudioVersion = 17.8.34309.116
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "doot-gen", "doot-gen.csproj", "{269E2CAF-5A75-4C50-BC49-E09B043E84F2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "doot-gen", "doot-gen.csproj", "{273B4F81-E5D7-4BCB-B634-F6CCE73F016D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{269E2CAF-5A75-4C50-BC49-E09B043E84F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{269E2CAF-5A75-4C50-BC49-E09B043E84F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{269E2CAF-5A75-4C50-BC49-E09B043E84F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{269E2CAF-5A75-4C50-BC49-E09B043E84F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{273B4F81-E5D7-4BCB-B634-F6CCE73F016D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{273B4F81-E5D7-4BCB-B634-F6CCE73F016D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{273B4F81-E5D7-4BCB-B634-F6CCE73F016D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{273B4F81-E5D7-4BCB-B634-F6CCE73F016D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {1E8E6BD5-FD08-4EC0-8E9B-DBBE2B12408C}
+		SolutionGuid = {842F071F-D559-4CAF-A88D-C848F7EEF297}
 	EndGlobalSection
 EndGlobal
