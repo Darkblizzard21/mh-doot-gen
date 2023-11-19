@@ -65,8 +65,8 @@ if (Test-Path $filePath) {
             
             $outfile += "`tstatic class HornExtensions`n`t`{`n"
     
-            $outfile += "`t`tpublic static string GetHornModelId(this Horns horn)`n`t`{`n"
-            $outfile += "`t`t`tswitch (horn)`n`t`t`{`n"
+            $outfile += "`t`tpublic static string GetHornModelId(this Horns horn)`n`t`t`{`n"
+            $outfile += "`t`t`tswitch (horn)`n`t`t`t`{`n"
             foreach ($key in $sortedKeys) {
                 $outfile += "`t`t`t`tcase Horns.$key`:`n"
                 $outfile += "`t`t`t`t`treturn `"$key`";`n"
@@ -75,8 +75,8 @@ if (Test-Path $filePath) {
             $outfile += "`t`t`treturn `"N/A`";`n"
             $outfile += "`t`t`}`n`n"
             
-            $outfile += "`t`tpublic static string  GetHornNames(this Horns horn)`n`t`{`n"
-            $outfile += "`t`t`tswitch (horn)`n`t`t`{`n"
+            $outfile += "`t`tpublic static string  GetHornNames(this Horns horn)`n`t`t`{`n"
+            $outfile += "`t`t`tswitch (horn)`n`t`t`t`{`n"
             foreach ($key in $sortedKeys) {
                 $outfile += "`t`t`t`tcase Horns.$key`:`n"
                 $outfile += "`t`t`t`t`treturn `"$($groupedValues[$key])`";`n"
@@ -90,6 +90,7 @@ if (Test-Path $filePath) {
             $outfile += "`}`n"
             Write-Output "$outfile"
             $outfile | Out-File -FilePath $outPath
+            (Get-Content $outPath) | Out-File $outPath
         } else {
             Write-Output "No parent table found for the element with content '$searchContent'."
         }
