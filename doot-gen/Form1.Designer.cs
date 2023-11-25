@@ -28,70 +28,81 @@
         /// </summary>
         private void InitializeComponent()
         {
-            label1 = new Label();
-            button1 = new Button();
-            label2 = new Label();
-            label3 = new Label();
-            button2 = new Button();
+            SLabelWwiseConsole = new Label();
+            SelectConsole = new Button();
+            labelWwiseConsole = new Label();
+            SLabelWWiseProject = new Label();
+            SelectProject = new Button();
+            labelWwiseProject = new Label();
             SuspendLayout();
             // 
-            // label1
+            // SLabelWwiseConsole
             // 
-            label1.AutoSize = true;
-            label1.Location = new Point(12, 9);
-            label1.Name = "label1";
-            label1.Size = new Size(105, 15);
-            label1.TabIndex = 0;
-            label1.Text = "WwiseConsole.exe";
+            SLabelWwiseConsole.AutoSize = true;
+            SLabelWwiseConsole.Location = new Point(12, 9);
+            SLabelWwiseConsole.Name = "SLabelWwiseConsole";
+            SLabelWwiseConsole.Size = new Size(105, 15);
+            SLabelWwiseConsole.TabIndex = 0;
+            SLabelWwiseConsole.Text = "WwiseConsole.exe";
             // 
-            // button1
+            // SelectConsole
             // 
-            button1.Location = new Point(123, 5);
-            button1.Name = "button1";
-            button1.Size = new Size(75, 23);
-            button1.TabIndex = 1;
-            button1.Text = "button1";
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += button1_Click;
+            SelectConsole.Location = new Point(123, 5);
+            SelectConsole.Name = "SelectConsole";
+            SelectConsole.Size = new Size(75, 23);
+            SelectConsole.TabIndex = 1;
+            SelectConsole.Text = "Select";
+            SelectConsole.UseVisualStyleBackColor = true;
+            SelectConsole.Click += SelectConsole_Click;
             // 
-            // label2
+            // labelWwiseConsole
             // 
-            label2.AutoSize = true;
-            label2.Location = new Point(204, 9);
-            label2.Name = "label2";
-            label2.Size = new Size(38, 15);
-            label2.TabIndex = 2;
-            label2.Text = "label2";
+            labelWwiseConsole.AutoSize = true;
+            labelWwiseConsole.Location = new Point(204, 9);
+            labelWwiseConsole.Name = "labelWwiseConsole";
+            labelWwiseConsole.Size = new Size(80, 15);
+            labelWwiseConsole.TabIndex = 2;
+            labelWwiseConsole.Text = "SET_BY_CODE";
             // 
-            // label3
+            // SLabelWWiseProject
             // 
-            label3.AutoSize = true;
-            label3.Location = new Point(12, 34);
-            label3.Name = "label3";
-            label3.Size = new Size(83, 15);
-            label3.TabIndex = 3;
-            label3.Text = "WWisieProject";
-            label3.Click += label3_Click;
+            SLabelWWiseProject.AutoSize = true;
+            SLabelWWiseProject.Location = new Point(12, 34);
+            SLabelWWiseProject.Name = "SLabelWWiseProject";
+            SLabelWWiseProject.Size = new Size(80, 15);
+            SLabelWWiseProject.TabIndex = 3;
+            SLabelWWiseProject.Text = "WWiseProject";
             // 
-            // button2
+            // SelectProject
             // 
-            button2.Location = new Point(123, 30);
-            button2.Name = "button2";
-            button2.Size = new Size(75, 23);
-            button2.TabIndex = 4;
-            button2.Text = "button2";
-            button2.UseVisualStyleBackColor = true;
+            SelectProject.Location = new Point(123, 30);
+            SelectProject.Name = "SelectProject";
+            SelectProject.Size = new Size(75, 23);
+            SelectProject.TabIndex = 4;
+            SelectProject.Text = "Select";
+            SelectProject.UseVisualStyleBackColor = true;
+            SelectProject.Click += SelectProject_Click;
+            // 
+            // labelWwiseProject
+            // 
+            labelWwiseProject.AutoSize = true;
+            labelWwiseProject.Location = new Point(204, 34);
+            labelWwiseProject.Name = "labelWwiseProject";
+            labelWwiseProject.Size = new Size(80, 15);
+            labelWwiseProject.TabIndex = 5;
+            labelWwiseProject.Text = "SET_BY_CODE";
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
-            Controls.Add(button2);
-            Controls.Add(label3);
-            Controls.Add(label2);
-            Controls.Add(button1);
-            Controls.Add(label1);
+            Controls.Add(labelWwiseProject);
+            Controls.Add(SelectProject);
+            Controls.Add(SLabelWWiseProject);
+            Controls.Add(labelWwiseConsole);
+            Controls.Add(SelectConsole);
+            Controls.Add(SLabelWwiseConsole);
             Name = "Form1";
             Text = "Form1";
             ResumeLayout(false);
@@ -99,10 +110,11 @@
         }
 
         #endregion
-        private Label label1;
-        private Button button1;
-        private Label label2;
-        private Label label3;
-        private Button button2;
+        private Label SLabelWwiseConsole;
+        private Button SelectConsole;
+        private Label labelWwiseConsole;
+        private Label SLabelWWiseProject;
+        private Button SelectProject;
+        private Label labelWwiseProject;
     }
 }
