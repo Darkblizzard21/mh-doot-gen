@@ -47,6 +47,7 @@
             HelpMenu = new ToolStripMenuItem();
             HelpGitHubPage = new ToolStripMenuItem();
             HelpHornIds = new ToolStripMenuItem();
+            hornSelection = new ComboBox();
             ConfigMenuStrip.SuspendLayout();
             SuspendLayout();
             // 
@@ -154,35 +155,35 @@
             // ConfigMenuSave
             // 
             ConfigMenuSave.Name = "ConfigMenuSave";
-            ConfigMenuSave.Size = new Size(180, 22);
+            ConfigMenuSave.Size = new Size(110, 22);
             ConfigMenuSave.Text = "Save";
             ConfigMenuSave.Click += ConfigMenuSave_Click;
             // 
             // ConfigMenuSaveTo
             // 
             ConfigMenuSaveTo.Name = "ConfigMenuSaveTo";
-            ConfigMenuSaveTo.Size = new Size(180, 22);
+            ConfigMenuSaveTo.Size = new Size(110, 22);
             ConfigMenuSaveTo.Text = "SaveTo";
             ConfigMenuSaveTo.Click += ConfigMenuSaveTo_Click;
             // 
             // ConfigMenuReload
             // 
             ConfigMenuReload.Name = "ConfigMenuReload";
-            ConfigMenuReload.Size = new Size(180, 22);
+            ConfigMenuReload.Size = new Size(110, 22);
             ConfigMenuReload.Text = "Reload";
             ConfigMenuReload.Click += ConfigMenuReload_Click;
             // 
             // ConfigMenuLoad
             // 
             ConfigMenuLoad.Name = "ConfigMenuLoad";
-            ConfigMenuLoad.Size = new Size(180, 22);
+            ConfigMenuLoad.Size = new Size(110, 22);
             ConfigMenuLoad.Text = "Load";
             ConfigMenuLoad.Click += ConfigMenuLoad_Click;
             // 
             // ConfigMenuReset
             // 
             ConfigMenuReset.Name = "ConfigMenuReset";
-            ConfigMenuReset.Size = new Size(180, 22);
+            ConfigMenuReset.Size = new Size(110, 22);
             ConfigMenuReset.Text = "Reset";
             ConfigMenuReset.Click += ConfigMenuReset_Click;
             // 
@@ -196,22 +197,31 @@
             // HelpGitHubPage
             // 
             HelpGitHubPage.Name = "HelpGitHubPage";
-            HelpGitHubPage.Size = new Size(180, 22);
+            HelpGitHubPage.Size = new Size(141, 22);
             HelpGitHubPage.Text = "GitHub Page";
             HelpGitHubPage.Click += HelpGitHubPage_Click;
             // 
             // HelpHornIds
             // 
             HelpHornIds.Name = "HelpHornIds";
-            HelpHornIds.Size = new Size(180, 22);
+            HelpHornIds.Size = new Size(141, 22);
             HelpHornIds.Text = "HornIds";
             HelpHornIds.Click += HelpHornIds_Click;
+            // 
+            // hornSelection
+            // 
+            hornSelection.FormattingEnabled = true;
+            hornSelection.Location = new Point(12, 113);
+            hornSelection.Name = "hornSelection";
+            hornSelection.Size = new Size(776, 23);
+            hornSelection.TabIndex = 10;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(hornSelection);
             Controls.Add(labelGameFiles);
             Controls.Add(SelectGameFiles);
             Controls.Add(SLabelGameFiles);
@@ -251,5 +261,6 @@
         private ToolStripMenuItem HelpMenu;
         private ToolStripMenuItem HelpGitHubPage;
         private ToolStripMenuItem HelpHornIds;
+        private ComboBox hornSelection;
     }
 }

@@ -14,6 +14,14 @@ namespace doot_gen
         public string gamePath;
     }
 
+    struct HornWrapper
+    {
+        public HornWrapper(Horns horn) {this.horn = horn;}
+        public Horns horn;
+        public override string ToString() { return horn.ToString() + ": " + horn.GetHornName(); }
+
+    }
+
     public partial class Form1 : Form
     {
         const int VERSION_MAJOR = 0;
@@ -43,10 +51,15 @@ namespace doot_gen
                 {
                     avaibleHorns = HornExtensions.allHorns.Where(horn =>
                     {
-                        bool test = horn.ExistingHornFiles(soundPath).Any();
-                        if (!test) Debug.WriteLine(horn.GetHornModelId() + " - " + horn.GetHornName());
-                        return test;
+                        return horn.ExistingHornFiles(soundPath).Any(); ;
                     }).ToList();
+                    // Update List
+                    hornSelection.SelectedItem = null;
+                    hornSelection.Items.Clear();
+                    foreach (var horn in avaibleHorns)
+                    {
+                        hornSelection.Items.Add(new HornWrapper(horn));
+                    }
                     labelGameFiles.Text = value;
                 }
             }
@@ -56,6 +69,7 @@ namespace doot_gen
         {
             InitializeComponent();
             this.Text = "MH DootGen@" + VERSION_MAJOR + "." + VERSION_MINOR + "." + VERSION_PATCH;
+            hornSelection.AutoCompleteMode = AutoCompleteMode.Suggest;
 
             if (File.Exists(configFile))
             {
@@ -94,6 +108,9 @@ namespace doot_gen
             consolePath = "N/A";
             projectPath = "N/A";
             gamePath = "N/A";
+            hornSelection.SelectedItem = null;
+            hornSelection.Items.Clear();
+            hornSelection.Items.Add("None");
         }
 
 
