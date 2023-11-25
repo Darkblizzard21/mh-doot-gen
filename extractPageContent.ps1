@@ -54,11 +54,12 @@ if (Test-Path $filePath) {
 
             $outfile = "//Automaticly generated file"
             $outfile += "using System.Collections;`nusing System.Collections.Generic;`n`n"
-            $outfile += "namespace doot`n`{`n"
+            $outfile += "namespace doot_gen`n`{`n"
             $outfile += "`tenum Horns`n`t`{`n"
 
             foreach ($key in $sortedKeys) {
-                $outfile += "`t`t$key,`n "
+                $nr = $key.Substring(3)
+                $outfile += "`t`t$key = $nr,`n "
             }
             $outfile += "`t`}`n`n"
 
@@ -77,6 +78,22 @@ if (Test-Path $filePath) {
                 $outfile += "`Horns.$key`,"
             }
             $outfile += "};`n`n"
+
+            $outfile += "`t`tpublic static IEnumerable<string> PossibleHornFiles(this Horns horn)`n"
+            $outfile += "`t`t{`n"
+            $outfile += "`t`t`tstring hornNumber = ((int)horn).ToString(`"D3`");`n"
+            $outfile += "`t`t`tyield return `"pl_wp_hrn_song_`" + hornNumber + `"_media.bnk.2.X64`";`n"
+            $outfile += "`t`t`tyield return `"pl_wp_hrn_song_`" + hornNumber + `"_khk_media.bnk.2.X64`";`n"
+            $outfile += "`t`t`tyield return `"pl_wp_hrn_gimmick_`" + hornNumber + `"_media.bnk.2.X64`";`n"
+            $outfile += "`t`t`tyield return `"pl_wp_hrn_gimmick_`" + hornNumber + `"_khk_media.bnk.2.X64`";`n"
+°           $outfile += "`t`t`tyield return `"pl_wp_hrn_oneoff_`" + hornNumber + `"_media.bnk.2.X64`";`n"
+            $outfile += "`t`t`tyield return `"pl_wp_hrn_oneoff_`" + hornNumber + `"_khk_media.bnk.2.X64`";`n"
+            $outfile += "`t`t}`n`n"
+
+            $outfile += "`t`tpublic static IEnumerable<string> ExistingHornFiles(this Horns horn, string soundPath)`n"
+            $outfile += "`t`t{`n"
+            $outfile += "`t`t`treturn PossibleHornFiles(horn).Select(file => soundPath + file).Where(file => File.Exists(file));`n"
+            $outfile += "`t`t}`n`n"
 
             $outfile += "`t`tpublic static string GetHornModelId(this Horns horn)`n`t`t`{`n"
             $outfile += "`t`t`tswitch (horn)`n`t`t`t`{`n"
