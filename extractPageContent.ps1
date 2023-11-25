@@ -86,7 +86,7 @@ if (Test-Path $filePath) {
             $outfile += "`t`t`tyield return `"pl_wp_hrn_song_`" + hornNumber + `"_khk_media.bnk.2.X64`";`n"
             $outfile += "`t`t`tyield return `"pl_wp_hrn_gimmick_`" + hornNumber + `"_media.bnk.2.X64`";`n"
             $outfile += "`t`t`tyield return `"pl_wp_hrn_gimmick_`" + hornNumber + `"_khk_media.bnk.2.X64`";`n"
-°           $outfile += "`t`t`tyield return `"pl_wp_hrn_oneoff_`" + hornNumber + `"_media.bnk.2.X64`";`n"
+            $outfile += "`t`t`tyield return `"pl_wp_hrn_oneoff_`" + hornNumber + `"_media.bnk.2.X64`";`n"
             $outfile += "`t`t`tyield return `"pl_wp_hrn_oneoff_`" + hornNumber + `"_khk_media.bnk.2.X64`";`n"
             $outfile += "`t`t}`n`n"
 
