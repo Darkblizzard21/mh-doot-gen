@@ -64,7 +64,20 @@ if (Test-Path $filePath) {
 
             
             $outfile += "`tstatic class HornExtensions`n`t`{`n"
-    
+
+            
+		    $outfile += "`t`tpublic static readonly List<string> hornModelIds = new() { "
+            foreach ($key in $sortedKeys) {
+                $outfile += "`"$key`","
+            }
+            $outfile += "};`n`n"
+
+            $outfile += "`t`tpublic static readonly List<Horns> allHorns = new() { "
+            foreach ($key in $sortedKeys) {
+                $outfile += "`Horns.$key`,"
+            }
+            $outfile += "};`n`n"
+
             $outfile += "`t`tpublic static string GetHornModelId(this Horns horn)`n`t`t`{`n"
             $outfile += "`t`t`tswitch (horn)`n`t`t`t`{`n"
             foreach ($key in $sortedKeys) {
@@ -75,7 +88,7 @@ if (Test-Path $filePath) {
             $outfile += "`t`t`treturn `"N/A`";`n"
             $outfile += "`t`t`}`n`n"
             
-            $outfile += "`t`tpublic static string  GetHornNames(this Horns horn)`n`t`t`{`n"
+            $outfile += "`t`tpublic static string  GetHornName(this Horns horn)`n`t`t`{`n"
             $outfile += "`t`t`tswitch (horn)`n`t`t`t`{`n"
             foreach ($key in $sortedKeys) {
                 $outfile += "`t`t`t`tcase Horns.$key`:`n"
