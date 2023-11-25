@@ -48,6 +48,7 @@
             HelpGitHubPage = new ToolStripMenuItem();
             HelpHornIds = new ToolStripMenuItem();
             hornSelection = new ComboBox();
+            HelpModdingWiki = new ToolStripMenuItem();
             ConfigMenuStrip.SuspendLayout();
             SuspendLayout();
             // 
@@ -189,7 +190,7 @@
             // 
             // HelpMenu
             // 
-            HelpMenu.DropDownItems.AddRange(new ToolStripItem[] { HelpGitHubPage, HelpHornIds });
+            HelpMenu.DropDownItems.AddRange(new ToolStripItem[] { HelpGitHubPage, HelpHornIds, HelpModdingWiki });
             HelpMenu.Name = "HelpMenu";
             HelpMenu.Size = new Size(44, 20);
             HelpMenu.Text = "Help";
@@ -197,14 +198,14 @@
             // HelpGitHubPage
             // 
             HelpGitHubPage.Name = "HelpGitHubPage";
-            HelpGitHubPage.Size = new Size(141, 22);
+            HelpGitHubPage.Size = new Size(180, 22);
             HelpGitHubPage.Text = "GitHub Page";
             HelpGitHubPage.Click += HelpGitHubPage_Click;
             // 
             // HelpHornIds
             // 
             HelpHornIds.Name = "HelpHornIds";
-            HelpHornIds.Size = new Size(141, 22);
+            HelpHornIds.Size = new Size(180, 22);
             HelpHornIds.Text = "HornIds";
             HelpHornIds.Click += HelpHornIds_Click;
             // 
@@ -215,6 +216,13 @@
             hornSelection.Name = "hornSelection";
             hornSelection.Size = new Size(776, 23);
             hornSelection.TabIndex = 10;
+            // 
+            // HelpModdingWiki
+            // 
+            HelpModdingWiki.Name = "HelpModdingWiki";
+            HelpModdingWiki.Size = new Size(180, 22);
+            HelpModdingWiki.Text = "ModingWiki";
+            HelpModdingWiki.Click += HelpModdingWiki_Click;
             // 
             // Form1
             // 
@@ -262,5 +270,6 @@
         private ToolStripMenuItem HelpGitHubPage;
         private ToolStripMenuItem HelpHornIds;
         private ComboBox hornSelection;
+        private ToolStripMenuItem HelpModdingWiki;
     }
 }

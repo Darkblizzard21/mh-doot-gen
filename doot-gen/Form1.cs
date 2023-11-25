@@ -225,5 +225,10 @@ namespace doot_gen
         {
             System.Diagnostics.Process.Start("explorer", "https://github.com/Darkblizzard21/mh-doot-gen");
         }
+
+        private void HelpModdingWiki_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("explorer", "\"https://github.com/mhvuze/MonsterHunterRiseModding/wiki\"");
+        }
     }
 }
