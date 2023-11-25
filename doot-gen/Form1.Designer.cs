@@ -41,9 +41,12 @@
             ConfigMenu = new ToolStripMenuItem();
             ConfigMenuSave = new ToolStripMenuItem();
             ConfigMenuSaveTo = new ToolStripMenuItem();
+            ConfigMenuReload = new ToolStripMenuItem();
             ConfigMenuLoad = new ToolStripMenuItem();
             ConfigMenuReset = new ToolStripMenuItem();
-            ConfigMenuReload = new ToolStripMenuItem();
+            HelpMenu = new ToolStripMenuItem();
+            HelpGitHubPage = new ToolStripMenuItem();
+            HelpHornIds = new ToolStripMenuItem();
             ConfigMenuStrip.SuspendLayout();
             SuspendLayout();
             // 
@@ -134,7 +137,7 @@
             // ConfigMenuStrip
             // 
             ConfigMenuStrip.BackColor = SystemColors.ControlDark;
-            ConfigMenuStrip.Items.AddRange(new ToolStripItem[] { ConfigMenu });
+            ConfigMenuStrip.Items.AddRange(new ToolStripItem[] { ConfigMenu, HelpMenu });
             ConfigMenuStrip.Location = new Point(0, 0);
             ConfigMenuStrip.Name = "ConfigMenuStrip";
             ConfigMenuStrip.Size = new Size(800, 24);
@@ -145,8 +148,8 @@
             // 
             ConfigMenu.DropDownItems.AddRange(new ToolStripItem[] { ConfigMenuSave, ConfigMenuSaveTo, ConfigMenuReload, ConfigMenuLoad, ConfigMenuReset });
             ConfigMenu.Name = "ConfigMenu";
-            ConfigMenu.Size = new Size(53, 20);
-            ConfigMenu.Text = "config";
+            ConfigMenu.Size = new Size(55, 20);
+            ConfigMenu.Text = "Config";
             // 
             // ConfigMenuSave
             // 
@@ -162,6 +165,13 @@
             ConfigMenuSaveTo.Text = "SaveTo";
             ConfigMenuSaveTo.Click += ConfigMenuSaveTo_Click;
             // 
+            // ConfigMenuReload
+            // 
+            ConfigMenuReload.Name = "ConfigMenuReload";
+            ConfigMenuReload.Size = new Size(180, 22);
+            ConfigMenuReload.Text = "Reload";
+            ConfigMenuReload.Click += ConfigMenuReload_Click;
+            // 
             // ConfigMenuLoad
             // 
             ConfigMenuLoad.Name = "ConfigMenuLoad";
@@ -176,12 +186,26 @@
             ConfigMenuReset.Text = "Reset";
             ConfigMenuReset.Click += ConfigMenuReset_Click;
             // 
-            // ConfigMenuReload
+            // HelpMenu
             // 
-            ConfigMenuReload.Name = "ConfigMenuReload";
-            ConfigMenuReload.Size = new Size(180, 22);
-            ConfigMenuReload.Text = "Reload";
-            ConfigMenuReload.Click += ConfigMenuReload_Click;
+            HelpMenu.DropDownItems.AddRange(new ToolStripItem[] { HelpGitHubPage, HelpHornIds });
+            HelpMenu.Name = "HelpMenu";
+            HelpMenu.Size = new Size(44, 20);
+            HelpMenu.Text = "Help";
+            // 
+            // HelpGitHubPage
+            // 
+            HelpGitHubPage.Name = "HelpGitHubPage";
+            HelpGitHubPage.Size = new Size(180, 22);
+            HelpGitHubPage.Text = "GitHub Page";
+            HelpGitHubPage.Click += HelpGitHubPage_Click;
+            // 
+            // HelpHornIds
+            // 
+            HelpHornIds.Name = "HelpHornIds";
+            HelpHornIds.Size = new Size(180, 22);
+            HelpHornIds.Text = "HornIds";
+            HelpHornIds.Click += HelpHornIds_Click;
             // 
             // Form1
             // 
@@ -224,5 +248,8 @@
         private ToolStripMenuItem ConfigMenuReset;
         private ToolStripMenuItem ConfigMenuSaveTo;
         private ToolStripMenuItem ConfigMenuReload;
+        private ToolStripMenuItem HelpMenu;
+        private ToolStripMenuItem HelpGitHubPage;
+        private ToolStripMenuItem HelpHornIds;
     }
 }

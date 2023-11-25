@@ -1,7 +1,9 @@
 using Microsoft.VisualBasic.Devices;
 using Newtonsoft.Json;
 using System.Diagnostics;
+using System.IO;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace doot_gen
 {
@@ -19,6 +21,8 @@ namespace doot_gen
         const int VERSION_PATCH = 0;
 
         private string configFile = Directory.GetCurrentDirectory() + @"\config.json";
+        private List<Horns> avaibleHorns = new();
+
         private string consolePath
         {
             get { return labelWwiseConsole.Text; }
@@ -32,9 +36,21 @@ namespace doot_gen
         private string gamePath
         {
             get { return labelGameFiles.Text; }
-            set { labelGameFiles.Text = value; }
+            set
+            {
+                string soundPath = value + "\\natives\\STM\\Sound\\Wwise\\";
+                if (Directory.Exists(soundPath))
+                {
+                    avaibleHorns = HornExtensions.allHorns.Where(horn =>
+                    {
+                        bool test = horn.ExistingHornFiles(soundPath).Any();
+                        if (!test) Debug.WriteLine(horn.GetHornModelId() + " - " + horn.GetHornName());
+                        return test;
+                    }).ToList();
+                    labelGameFiles.Text = value;
+                }
+            }
         }
-
 
         public Form1()
         {
@@ -120,6 +136,17 @@ namespace doot_gen
             DialogResult res = dialog.ShowDialog();
             if (res == DialogResult.OK)
             {
+                string soundPath = dialog.SelectedPath + "\\natives\\STM\\Sound\\Wwise\\";
+                if (!Directory.Exists(soundPath))
+                {
+                    MessageBox.Show(
+                        "Expected Monster Hunter Rise File structure:\n"
+                        + "%GAME_PATH%\\natives\\STM\\Sound\\Wwise",
+                        "Invalid Folder",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
+                    return;
+                }
                 Debug.WriteLine("Dialog OK - GameFolder is now: " + dialog.SelectedPath);
                 gamePath = dialog.SelectedPath;
             }
@@ -170,6 +197,16 @@ namespace doot_gen
         private void ConfigMenuReload_Click(object sender, EventArgs e)
         {
             LoadConfig();
+        }
+
+        private void HelpHornIds_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("explorer", "\"https://github.com/mhvuze/MonsterHunterRiseModding/wiki/Weapon-IDs-(LS,SA,GL,DB,HH)#hunting-horn\"");
+        }
+
+        private void HelpGitHubPage_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("explorer", "https://github.com/Darkblizzard21/mh-doot-gen");
         }
     }
 }
