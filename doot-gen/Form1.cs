@@ -1,5 +1,6 @@
 using Microsoft.VisualBasic.Devices;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
@@ -47,6 +48,10 @@ namespace doot_gen
             set
             {
                 string soundPath = value + "\\natives\\STM\\Sound\\Wwise\\";
+                hornSelection.SelectedItem = null;
+                hornSelection.Items.Clear();
+                avaibleHorns.Clear();
+
                 if (Directory.Exists(soundPath))
                 {
                     avaibleHorns = HornExtensions.allHorns.Where(horn =>
@@ -54,14 +59,18 @@ namespace doot_gen
                         return horn.ExistingHornFiles(soundPath).Any(); ;
                     }).ToList();
                     // Update List
-                    hornSelection.SelectedItem = null;
-                    hornSelection.Items.Clear();
                     foreach (var horn in avaibleHorns)
                     {
-                        hornSelection.Items.Add(new HornWrapper(horn));
+                        HornWrapper wrapper = new(horn);
+                        hornSelection.Items.Add(wrapper);
+                        hornSelection.AutoCompleteCustomSource.Add(wrapper.ToString());
                     }
-                    labelGameFiles.Text = value;
                 }
+                else
+                {
+                    hornSelection.Items.Add("Select GamePath before selecting Horn");
+                }
+                labelGameFiles.Text = value;
             }
         }
 
@@ -70,6 +79,7 @@ namespace doot_gen
             InitializeComponent();
             this.Text = "MH DootGen@" + VERSION_MAJOR + "." + VERSION_MINOR + "." + VERSION_PATCH;
             hornSelection.AutoCompleteMode = AutoCompleteMode.Suggest;
+            hornSelection.AutoCompleteSource = AutoCompleteSource.CustomSource;
 
             if (File.Exists(configFile))
             {
@@ -84,7 +94,10 @@ namespace doot_gen
         void LoadConfig()
         {
             Debug.WriteLine("Loading config from " + configFile);
-            Config config = JsonConvert.DeserializeObject<Config>(File.OpenText(configFile).ReadToEnd());
+            StreamReader stream = File.OpenText(configFile);
+            Config config = JsonConvert.DeserializeObject<Config>(stream.ReadToEnd());
+            stream.Close();
+
             consolePath = config.consolePath;
             projectPath = config.projectPath;
             gamePath = config.gamePath;
@@ -108,9 +121,6 @@ namespace doot_gen
             consolePath = "N/A";
             projectPath = "N/A";
             gamePath = "N/A";
-            hornSelection.SelectedItem = null;
-            hornSelection.Items.Clear();
-            hornSelection.Items.Add("None");
         }
 
 
@@ -229,6 +239,21 @@ namespace doot_gen
         private void HelpModdingWiki_Click(object sender, EventArgs e)
         {
             System.Diagnostics.Process.Start("explorer", "\"https://github.com/mhvuze/MonsterHunterRiseModding/wiki\"");
+        }
+
+        private void hornSelection_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            fileTree.Nodes.Clear();
+            if (hornSelection.SelectedItem is HornWrapper)
+            {
+                string soundPath = gamePath + "\\natives\\STM\\Sound\\Wwise\\";
+                HornWrapper hornWrapper = (HornWrapper)hornSelection.SelectedItem;
+                foreach (var file in hornWrapper.horn.ExistingHornFiles(soundPath))
+                {
+                    fileTree.Nodes.Add(Path.GetFileName(file));
+                };
+                
+            }
         }
     }
 }

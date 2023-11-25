@@ -47,8 +47,10 @@
             HelpMenu = new ToolStripMenuItem();
             HelpGitHubPage = new ToolStripMenuItem();
             HelpHornIds = new ToolStripMenuItem();
-            hornSelection = new ComboBox();
             HelpModdingWiki = new ToolStripMenuItem();
+            hornSelection = new ComboBox();
+            SLabelHH = new Label();
+            fileTree = new TreeView();
             ConfigMenuStrip.SuspendLayout();
             SuspendLayout();
             // 
@@ -198,37 +200,58 @@
             // HelpGitHubPage
             // 
             HelpGitHubPage.Name = "HelpGitHubPage";
-            HelpGitHubPage.Size = new Size(180, 22);
+            HelpGitHubPage.Size = new Size(141, 22);
             HelpGitHubPage.Text = "GitHub Page";
             HelpGitHubPage.Click += HelpGitHubPage_Click;
             // 
             // HelpHornIds
             // 
             HelpHornIds.Name = "HelpHornIds";
-            HelpHornIds.Size = new Size(180, 22);
+            HelpHornIds.Size = new Size(141, 22);
             HelpHornIds.Text = "HornIds";
             HelpHornIds.Click += HelpHornIds_Click;
-            // 
-            // hornSelection
-            // 
-            hornSelection.FormattingEnabled = true;
-            hornSelection.Location = new Point(12, 113);
-            hornSelection.Name = "hornSelection";
-            hornSelection.Size = new Size(776, 23);
-            hornSelection.TabIndex = 10;
             // 
             // HelpModdingWiki
             // 
             HelpModdingWiki.Name = "HelpModdingWiki";
-            HelpModdingWiki.Size = new Size(180, 22);
+            HelpModdingWiki.Size = new Size(141, 22);
             HelpModdingWiki.Text = "ModingWiki";
             HelpModdingWiki.Click += HelpModdingWiki_Click;
+            // 
+            // hornSelection
+            // 
+            hornSelection.FormattingEnabled = true;
+            hornSelection.Location = new Point(139, 113);
+            hornSelection.MaximumSize = new Size(900, 0);
+            hornSelection.MinimumSize = new Size(600, 0);
+            hornSelection.Name = "hornSelection";
+            hornSelection.Size = new Size(649, 23);
+            hornSelection.TabIndex = 10;
+            hornSelection.SelectedIndexChanged += hornSelection_SelectedIndexChanged;
+            // 
+            // SLabelHH
+            // 
+            SLabelHH.AutoSize = true;
+            SLabelHH.Location = new Point(12, 116);
+            SLabelHH.Name = "SLabelHH";
+            SLabelHH.Size = new Size(81, 15);
+            SLabelHH.TabIndex = 11;
+            SLabelHH.Text = "Hunting Horn";
+            // 
+            // fileTree
+            // 
+            fileTree.Location = new Point(12, 144);
+            fileTree.Name = "fileTree";
+            fileTree.Size = new Size(288, 294);
+            fileTree.TabIndex = 12;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(fileTree);
+            Controls.Add(SLabelHH);
             Controls.Add(hornSelection);
             Controls.Add(labelGameFiles);
             Controls.Add(SelectGameFiles);
@@ -271,5 +294,7 @@
         private ToolStripMenuItem HelpHornIds;
         private ComboBox hornSelection;
         private ToolStripMenuItem HelpModdingWiki;
+        private Label SLabelHH;
+        private TreeView fileTree;
     }
 }
