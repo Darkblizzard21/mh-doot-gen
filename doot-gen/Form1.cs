@@ -19,6 +19,11 @@ namespace doot_gen
             get { return labelWwiseProject.Text; }
             set { labelWwiseProject.Text = value; }
         }
+        private string gamePath
+        {
+            get { return labelGameFiles.Text; }
+            set { labelGameFiles.Text = value; }
+        }
 
         public Form1()
         {
@@ -27,6 +32,7 @@ namespace doot_gen
 
             consolePath = "N/A";
             projectPath = "N/A";
+            gamePath = "N/A";
         }
 
         private void SelectConsole_Click(object sender, EventArgs e)
@@ -36,7 +42,7 @@ namespace doot_gen
             dialog.Filter = "Executable (*.exe)|*.exe";
             dialog.Title = "Select WwiseConsole.exe";
             DialogResult res = dialog.ShowDialog();
-            if(res == DialogResult.OK)
+            if (res == DialogResult.OK)
             {
                 Debug.WriteLine("Dialog OK - Console is now: " + dialog.FileName);
                 consolePath = dialog.FileName;
@@ -46,7 +52,7 @@ namespace doot_gen
         private void SelectProject_Click(object sender, EventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();
-            dialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)+ @"\Documents";
+            dialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Documents";
             dialog.Filter = "Audiokinetic Wwise Project (*.wproj)|*.wproj";
             dialog.Title = "Select WwiseProject";
             DialogResult res = dialog.ShowDialog();
@@ -54,6 +60,19 @@ namespace doot_gen
             {
                 Debug.WriteLine("Dialog OK - Project is now: " + dialog.FileName);
                 projectPath = dialog.FileName;
+            }
+        }
+
+        private void SelectGameFiles_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog dialog = new FolderBrowserDialog();
+            dialog.Description = "Extracted Game";
+            dialog.InitialDirectory = Directory.GetCurrentDirectory();
+            DialogResult res = dialog.ShowDialog();
+            if (res == DialogResult.OK)
+            {
+                Debug.WriteLine("Dialog OK - GameFolder is now: " + dialog.SelectedPath);
+                gamePath = dialog.SelectedPath;
             }
         }
     }
