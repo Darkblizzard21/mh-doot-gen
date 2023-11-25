@@ -37,7 +37,14 @@
             SLabelGameFiles = new Label();
             SelectGameFiles = new Button();
             labelGameFiles = new Label();
-            menuStrip1 = new MenuStrip();
+            ConfigMenuStrip = new MenuStrip();
+            ConfigMenu = new ToolStripMenuItem();
+            ConfigMenuSave = new ToolStripMenuItem();
+            ConfigMenuSaveTo = new ToolStripMenuItem();
+            ConfigMenuLoad = new ToolStripMenuItem();
+            ConfigMenuReset = new ToolStripMenuItem();
+            ConfigMenuReload = new ToolStripMenuItem();
+            ConfigMenuStrip.SuspendLayout();
             SuspendLayout();
             // 
             // SLabelWwiseConsole
@@ -124,13 +131,57 @@
             labelGameFiles.TabIndex = 8;
             labelGameFiles.Text = "SET_BY_CODE";
             // 
-            // menuStrip1
+            // ConfigMenuStrip
             // 
-            menuStrip1.Location = new Point(0, 0);
-            menuStrip1.Name = "menuStrip1";
-            menuStrip1.Size = new Size(800, 24);
-            menuStrip1.TabIndex = 9;
-            menuStrip1.Text = "menuStrip1";
+            ConfigMenuStrip.BackColor = SystemColors.ControlDark;
+            ConfigMenuStrip.Items.AddRange(new ToolStripItem[] { ConfigMenu });
+            ConfigMenuStrip.Location = new Point(0, 0);
+            ConfigMenuStrip.Name = "ConfigMenuStrip";
+            ConfigMenuStrip.Size = new Size(800, 24);
+            ConfigMenuStrip.TabIndex = 9;
+            ConfigMenuStrip.Text = "menuStrip1";
+            // 
+            // ConfigMenu
+            // 
+            ConfigMenu.DropDownItems.AddRange(new ToolStripItem[] { ConfigMenuSave, ConfigMenuSaveTo, ConfigMenuReload, ConfigMenuLoad, ConfigMenuReset });
+            ConfigMenu.Name = "ConfigMenu";
+            ConfigMenu.Size = new Size(53, 20);
+            ConfigMenu.Text = "config";
+            // 
+            // ConfigMenuSave
+            // 
+            ConfigMenuSave.Name = "ConfigMenuSave";
+            ConfigMenuSave.Size = new Size(180, 22);
+            ConfigMenuSave.Text = "Save";
+            ConfigMenuSave.Click += ConfigMenuSave_Click;
+            // 
+            // ConfigMenuSaveTo
+            // 
+            ConfigMenuSaveTo.Name = "ConfigMenuSaveTo";
+            ConfigMenuSaveTo.Size = new Size(180, 22);
+            ConfigMenuSaveTo.Text = "SaveTo";
+            ConfigMenuSaveTo.Click += ConfigMenuSaveTo_Click;
+            // 
+            // ConfigMenuLoad
+            // 
+            ConfigMenuLoad.Name = "ConfigMenuLoad";
+            ConfigMenuLoad.Size = new Size(180, 22);
+            ConfigMenuLoad.Text = "Load";
+            ConfigMenuLoad.Click += ConfigMenuLoad_Click;
+            // 
+            // ConfigMenuReset
+            // 
+            ConfigMenuReset.Name = "ConfigMenuReset";
+            ConfigMenuReset.Size = new Size(180, 22);
+            ConfigMenuReset.Text = "Reset";
+            ConfigMenuReset.Click += ConfigMenuReset_Click;
+            // 
+            // ConfigMenuReload
+            // 
+            ConfigMenuReload.Name = "ConfigMenuReload";
+            ConfigMenuReload.Size = new Size(180, 22);
+            ConfigMenuReload.Text = "Reload";
+            ConfigMenuReload.Click += ConfigMenuReload_Click;
             // 
             // Form1
             // 
@@ -146,10 +197,12 @@
             Controls.Add(labelWwiseConsole);
             Controls.Add(SelectConsole);
             Controls.Add(SLabelWwiseConsole);
-            Controls.Add(menuStrip1);
-            MainMenuStrip = menuStrip1;
+            Controls.Add(ConfigMenuStrip);
+            MainMenuStrip = ConfigMenuStrip;
             Name = "Form1";
             Text = "Form1";
+            ConfigMenuStrip.ResumeLayout(false);
+            ConfigMenuStrip.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -164,6 +217,12 @@
         private Label SLabelGameFiles;
         private Button SelectGameFiles;
         private Label labelGameFiles;
-        private MenuStrip menuStrip1;
+        private MenuStrip ConfigMenuStrip;
+        private ToolStripMenuItem ConfigMenu;
+        private ToolStripMenuItem ConfigMenuSave;
+        private ToolStripMenuItem ConfigMenuLoad;
+        private ToolStripMenuItem ConfigMenuReset;
+        private ToolStripMenuItem ConfigMenuSaveTo;
+        private ToolStripMenuItem ConfigMenuReload;
     }
 }
