@@ -44,6 +44,13 @@
             ConfigMenuReload = new ToolStripMenuItem();
             ConfigMenuLoad = new ToolStripMenuItem();
             ConfigMenuReset = new ToolStripMenuItem();
+            audioMenu = new ToolStripMenuItem();
+            audioMenuBNK = new ToolStripMenuItem();
+            audioMenuBNKSelect = new ToolStripMenuItem();
+            audioMenuBNKGitHub = new ToolStripMenuItem();
+            audioMenuVgm = new ToolStripMenuItem();
+            audioMenuVgmSelect = new ToolStripMenuItem();
+            audioMenuVgmGithub = new ToolStripMenuItem();
             HelpMenu = new ToolStripMenuItem();
             HelpGitHubPage = new ToolStripMenuItem();
             HelpHornIds = new ToolStripMenuItem();
@@ -51,6 +58,8 @@
             hornSelection = new ComboBox();
             SLabelHH = new Label();
             fileTree = new TreeView();
+            ExportModButton = new Button();
+            currentWemFile = new Label();
             ConfigMenuStrip.SuspendLayout();
             SuspendLayout();
             // 
@@ -141,7 +150,7 @@
             // ConfigMenuStrip
             // 
             ConfigMenuStrip.BackColor = SystemColors.ControlDark;
-            ConfigMenuStrip.Items.AddRange(new ToolStripItem[] { ConfigMenu, HelpMenu });
+            ConfigMenuStrip.Items.AddRange(new ToolStripItem[] { ConfigMenu, audioMenu, HelpMenu });
             ConfigMenuStrip.Location = new Point(0, 0);
             ConfigMenuStrip.Name = "ConfigMenuStrip";
             ConfigMenuStrip.Size = new Size(800, 24);
@@ -189,6 +198,55 @@
             ConfigMenuReset.Size = new Size(110, 22);
             ConfigMenuReset.Text = "Reset";
             ConfigMenuReset.Click += ConfigMenuReset_Click;
+            // 
+            // audioMenu
+            // 
+            audioMenu.DropDownItems.AddRange(new ToolStripItem[] { audioMenuBNK, audioMenuVgm });
+            audioMenu.Name = "audioMenu";
+            audioMenu.Size = new Size(101, 20);
+            audioMenu.Text = "Audio Playback";
+            // 
+            // audioMenuBNK
+            // 
+            audioMenuBNK.DropDownItems.AddRange(new ToolStripItem[] { audioMenuBNKSelect, audioMenuBNKGitHub });
+            audioMenuBNK.Name = "audioMenuBNK";
+            audioMenuBNK.Size = new Size(180, 22);
+            audioMenuBNK.Text = "bnkextr.exe";
+            // 
+            // audioMenuBNKSelect
+            // 
+            audioMenuBNKSelect.Name = "audioMenuBNKSelect";
+            audioMenuBNKSelect.Size = new Size(180, 22);
+            audioMenuBNKSelect.Text = "Select exe";
+            audioMenuBNKSelect.Click += audioMenuBNKSelect_Click;
+            // 
+            // audioMenuBNKGitHub
+            // 
+            audioMenuBNKGitHub.Name = "audioMenuBNKGitHub";
+            audioMenuBNKGitHub.Size = new Size(180, 22);
+            audioMenuBNKGitHub.Text = "GitHub Page";
+            audioMenuBNKGitHub.Click += audioMenuBNKGitHub_Click;
+            // 
+            // audioMenuVgm
+            // 
+            audioMenuVgm.DropDownItems.AddRange(new ToolStripItem[] { audioMenuVgmSelect, audioMenuVgmGithub });
+            audioMenuVgm.Name = "audioMenuVgm";
+            audioMenuVgm.Size = new Size(180, 22);
+            audioMenuVgm.Text = "vgmstream";
+            // 
+            // audioMenuVgmSelect
+            // 
+            audioMenuVgmSelect.Name = "audioMenuVgmSelect";
+            audioMenuVgmSelect.Size = new Size(180, 22);
+            audioMenuVgmSelect.Text = "Select exe";
+            audioMenuVgmSelect.Click += audioMenuVgmSelect_Click;
+            // 
+            // audioMenuVgmGithub
+            // 
+            audioMenuVgmGithub.Name = "audioMenuVgmGithub";
+            audioMenuVgmGithub.Size = new Size(180, 22);
+            audioMenuVgmGithub.Text = "GitHub Page";
+            audioMenuVgmGithub.Click += audioMenuVgmGithub_Click;
             // 
             // HelpMenu
             // 
@@ -245,11 +303,32 @@
             fileTree.Size = new Size(288, 294);
             fileTree.TabIndex = 12;
             // 
+            // ExportModButton
+            // 
+            ExportModButton.Location = new Point(632, 144);
+            ExportModButton.Name = "ExportModButton";
+            ExportModButton.Size = new Size(156, 23);
+            ExportModButton.TabIndex = 13;
+            ExportModButton.Text = "Generate and Export Mod";
+            ExportModButton.UseVisualStyleBackColor = true;
+            ExportModButton.Click += ExportModButton_Click;
+            // 
+            // currentWemFile
+            // 
+            currentWemFile.AutoSize = true;
+            currentWemFile.Location = new Point(306, 148);
+            currentWemFile.Name = "currentWemFile";
+            currentWemFile.Size = new Size(161, 15);
+            currentWemFile.TabIndex = 15;
+            currentWemFile.Text = "Select a WEM in the tree view";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(currentWemFile);
+            Controls.Add(ExportModButton);
             Controls.Add(fileTree);
             Controls.Add(SLabelHH);
             Controls.Add(hornSelection);
@@ -296,5 +375,14 @@
         private ToolStripMenuItem HelpModdingWiki;
         private Label SLabelHH;
         private TreeView fileTree;
+        private Button ExportModButton;
+        private Label currentWemFile;
+        private ToolStripMenuItem audioMenu;
+        private ToolStripMenuItem audioMenuBNK;
+        private ToolStripMenuItem audioMenuBNKSelect;
+        private ToolStripMenuItem audioMenuBNKGitHub;
+        private ToolStripMenuItem audioMenuVgm;
+        private ToolStripMenuItem audioMenuVgmSelect;
+        private ToolStripMenuItem audioMenuVgmGithub;
     }
 }

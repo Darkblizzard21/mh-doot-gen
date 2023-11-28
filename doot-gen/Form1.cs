@@ -1,8 +1,11 @@
 using Microsoft.VisualBasic.Devices;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using RingingBloom;
+using RingingBloom.Common;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
@@ -13,11 +16,13 @@ namespace doot_gen
         public string consolePath;
         public string projectPath;
         public string gamePath;
+        public string? bnkextrPath;
+        public string? vgmstreamPath;
     }
 
     struct HornWrapper
     {
-        public HornWrapper(Horns horn) {this.horn = horn;}
+        public HornWrapper(Horns horn) { this.horn = horn; }
         public Horns horn;
         public override string ToString() { return horn.ToString() + ": " + horn.GetHornName(); }
 
@@ -31,6 +36,7 @@ namespace doot_gen
 
         private string configFile = Directory.GetCurrentDirectory() + @"\config.json";
         private List<Horns> avaibleHorns = new();
+        private List<NBNKFile> bankFiles = new();
 
         private string consolePath
         {
@@ -42,6 +48,7 @@ namespace doot_gen
             get { return labelWwiseProject.Text; }
             set { labelWwiseProject.Text = value; }
         }
+
         private string gamePath
         {
             get { return labelGameFiles.Text; }
@@ -74,12 +81,26 @@ namespace doot_gen
             }
         }
 
+        // bnkextrPath
+        private string? bnkextrPath
+        {
+            get { return audioMenuBNKSelect.Text == "Select exe" ? null : audioMenuBNKSelect.Text; }
+            set { audioMenuBNKSelect.Text = value == null ? "Select exe" : value; }
+        }
+        private string? vgmstreamPath
+        {
+            get { return audioMenuVgmSelect.Text == "Select exe" ? null : audioMenuVgmSelect.Text; }
+            set { audioMenuVgmSelect.Text = value == null ? "Select exe" : value; }
+        }
+
         public Form1()
         {
             InitializeComponent();
             this.Text = "MH DootGen@" + VERSION_MAJOR + "." + VERSION_MINOR + "." + VERSION_PATCH;
             hornSelection.AutoCompleteMode = AutoCompleteMode.Suggest;
             hornSelection.AutoCompleteSource = AutoCompleteSource.CustomSource;
+
+            ToggleModEditVisiblity(false);
 
             if (File.Exists(configFile))
             {
@@ -101,6 +122,8 @@ namespace doot_gen
             consolePath = config.consolePath;
             projectPath = config.projectPath;
             gamePath = config.gamePath;
+            bnkextrPath = config.bnkextrPath;
+            vgmstreamPath = config.vgmstreamPath;
         }
         void SaveConfig()
         {
@@ -109,6 +132,8 @@ namespace doot_gen
             config.consolePath = consolePath;
             config.projectPath = projectPath;
             config.gamePath = gamePath;
+            config.bnkextrPath = bnkextrPath;
+            config.vgmstreamPath = vgmstreamPath;
             string json = JsonConvert.SerializeObject(config);
             StreamWriter file = File.CreateText(configFile);
             file.Write(json);
@@ -241,19 +266,95 @@ namespace doot_gen
             System.Diagnostics.Process.Start("explorer", "\"https://github.com/mhvuze/MonsterHunterRiseModding/wiki\"");
         }
 
+        private void ToggleModEditVisiblity(bool b)
+        {
+            fileTree.Visible = b;
+            ExportModButton.Visible = b;
+        }
+
         private void hornSelection_SelectedIndexChanged(object sender, EventArgs e)
         {
+            bankFiles.Clear();
             fileTree.Nodes.Clear();
+            ToggleModEditVisiblity(false);
             if (hornSelection.SelectedItem is HornWrapper)
             {
+                ToggleModEditVisiblity(true);
                 string soundPath = gamePath + "\\natives\\STM\\Sound\\Wwise\\";
                 HornWrapper hornWrapper = (HornWrapper)hornSelection.SelectedItem;
                 foreach (var file in hornWrapper.horn.ExistingHornFiles(soundPath))
                 {
-                    fileTree.Nodes.Add(Path.GetFileName(file));
+                    BinaryReader readFile = new BinaryReader(new FileStream(file, FileMode.Open), Encoding.ASCII);
+                    NBNKFile nbnk = new NBNKFile(readFile, SupportedGames.MHRise);
+                    bankFiles.Add(nbnk);
+                    readFile.Close();
+
+                    TreeNode fileNode = new TreeNode();
+                    fileNode.Text = Path.GetFileName(file);
+                    fileNode.Expand();
+                    nbnk.DataIndex.wemList.ForEach(x =>
+                    {
+                        fileNode.Nodes.Add(x.name);
+                    });
+                    fileTree.Nodes.Add(fileNode);
                 };
-                
+
             }
+
+        }
+
+        private void ExportModButton_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(
+                        "This function still needs to be implemented",
+                        "Not Implemented!",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
+        }
+
+        private void modEditTable_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void audioMenuVgmSelect_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.InitialDirectory = Directory.GetCurrentDirectory();
+            dialog.Filter = "Executable (*.exe)|*.exe";
+            dialog.Title = "Select vgmstream-cli.exe";
+            dialog.CheckFileExists = true;
+            DialogResult res = dialog.ShowDialog();
+            if (res == DialogResult.OK)
+            {
+                Debug.WriteLine("Dialog OK - vgmstream-cli.exe is now: " + dialog.FileName);
+                vgmstreamPath = dialog.FileName;
+            }
+        }
+
+        private void audioMenuBNKSelect_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.InitialDirectory = Directory.GetCurrentDirectory();
+            dialog.Filter = "Executable (*.exe)|*.exe";
+            dialog.Title = "Select bnkextr.exe";
+            dialog.CheckFileExists = true;
+            DialogResult res = dialog.ShowDialog();
+            if (res == DialogResult.OK)
+            {
+                Debug.WriteLine("Dialog OK - bnkextr.exe is now: " + dialog.FileName);
+                bnkextrPath = dialog.FileName;
+            }
+        }
+        private void audioMenuBNKGitHub_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("explorer", "\"https://github.com/eXpl0it3r/bnkextr/releases/tag/2.0\"");
+        }
+
+        private void audioMenuVgmGithub_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("explorer", "\"https://github.com/vgmstream/vgmstream/releases/tag/r1879\"");
+
         }
     }
 }
