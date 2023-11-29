@@ -36,8 +36,9 @@ namespace doot_gen
 
         private string configFile = Directory.GetCurrentDirectory() + @"\config.json";
         private List<Horns> avaibleHorns = new();
-        private List<NBNKFile> bankFiles = new();
-
+        private Dictionary<string, NBNKFile> bankFiles = new();
+        private NBNKFile? currentBank = null;
+        private int currentWem = 0;
         private string consolePath
         {
             get { return labelWwiseConsole.Text; }
@@ -276,6 +277,7 @@ namespace doot_gen
         {
             bankFiles.Clear();
             fileTree.Nodes.Clear();
+
             ToggleModEditVisiblity(false);
             if (hornSelection.SelectedItem is HornWrapper)
             {
@@ -286,12 +288,16 @@ namespace doot_gen
                 {
                     BinaryReader readFile = new BinaryReader(new FileStream(file, FileMode.Open), Encoding.ASCII);
                     NBNKFile nbnk = new NBNKFile(readFile, SupportedGames.MHRise);
-                    bankFiles.Add(nbnk);
+                    if (nbnk.DataIndex == null) continue;
+                    string fileName = Path.GetFileName(file);
+                    bankFiles.Add(fileName, nbnk);
                     readFile.Close();
 
                     TreeNode fileNode = new TreeNode();
-                    fileNode.Text = Path.GetFileName(file);
+                    fileNode.Text = fileName;
                     fileNode.Expand();
+
+
                     nbnk.DataIndex.wemList.ForEach(x =>
                     {
                         fileNode.Nodes.Add(x.name);
@@ -356,5 +362,54 @@ namespace doot_gen
             System.Diagnostics.Process.Start("explorer", "\"https://github.com/vgmstream/vgmstream/releases/tag/r1879\"");
 
         }
+
+        private void fileTree_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            // Allways reset current bank
+            currentBank = null;
+
+            if (e.Node == null) { return; }
+            if (e.Node.Level != 1) { return; }
+            if (!bankFiles.TryGetValue(e.Node.Parent.Text, out NBNKFile file)) { return; }
+
+            List<Wem> wems = file.DataIndex.wemList.Where(wem => wem.name == e.Node.Text).ToList();
+            if (wems.Count == 0) { Debug.Assert(false); return; }
+            Wem wem = wems.First();
+
+            if (bnkextrPath != null && vgmstreamPath != null)
+            {
+                string soundPath = gamePath + "\\natives\\STM\\Sound\\Wwise\\";
+                string bankPath = soundPath + e.Node.Parent.Text;
+                string bankFolder = bankPath.Substring(0, bankPath.Length - 4) + "\\";
+                string wavPath = bankFolder + e.Node.Text + ".wem.wav";
+                
+                // extract file if not there
+                if (!File.Exists(wavPath))
+                {
+                    Cursor prev = Cursor.Current;
+                    Cursor.Current = Cursors.WaitCursor;
+                    // extract files
+                    Process process = Process.Start(bnkextrPath, bankPath);
+                    process.WaitForExit();
+
+                    // convert files
+                    List<Process> processes = new List<Process>();
+                    foreach (var item in Directory.EnumerateFiles(bankFolder))
+                    {
+                        processes.Add(Process.Start(vgmstreamPath, item));
+                    };
+                    processes.ForEach(p => p.WaitForExit());
+
+                    // clean up wems
+                    foreach (var item in Directory.EnumerateFiles(bankFolder).Where(f => f.EndsWith(".wem")))
+                    {
+                        File.Delete(item);
+                    }
+                    Cursor.Current = prev;
+                }
+
+            }
+        }
     }
 }
+

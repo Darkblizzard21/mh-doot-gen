@@ -60,6 +60,7 @@
             fileTree = new TreeView();
             ExportModButton = new Button();
             currentWemFile = new Label();
+            label1 = new Label();
             ConfigMenuStrip.SuspendLayout();
             SuspendLayout();
             // 
@@ -210,20 +211,20 @@
             // 
             audioMenuBNK.DropDownItems.AddRange(new ToolStripItem[] { audioMenuBNKSelect, audioMenuBNKGitHub });
             audioMenuBNK.Name = "audioMenuBNK";
-            audioMenuBNK.Size = new Size(180, 22);
+            audioMenuBNK.Size = new Size(135, 22);
             audioMenuBNK.Text = "bnkextr.exe";
             // 
             // audioMenuBNKSelect
             // 
             audioMenuBNKSelect.Name = "audioMenuBNKSelect";
-            audioMenuBNKSelect.Size = new Size(180, 22);
+            audioMenuBNKSelect.Size = new Size(141, 22);
             audioMenuBNKSelect.Text = "Select exe";
             audioMenuBNKSelect.Click += audioMenuBNKSelect_Click;
             // 
             // audioMenuBNKGitHub
             // 
             audioMenuBNKGitHub.Name = "audioMenuBNKGitHub";
-            audioMenuBNKGitHub.Size = new Size(180, 22);
+            audioMenuBNKGitHub.Size = new Size(141, 22);
             audioMenuBNKGitHub.Text = "GitHub Page";
             audioMenuBNKGitHub.Click += audioMenuBNKGitHub_Click;
             // 
@@ -231,20 +232,20 @@
             // 
             audioMenuVgm.DropDownItems.AddRange(new ToolStripItem[] { audioMenuVgmSelect, audioMenuVgmGithub });
             audioMenuVgm.Name = "audioMenuVgm";
-            audioMenuVgm.Size = new Size(180, 22);
+            audioMenuVgm.Size = new Size(135, 22);
             audioMenuVgm.Text = "vgmstream";
             // 
             // audioMenuVgmSelect
             // 
             audioMenuVgmSelect.Name = "audioMenuVgmSelect";
-            audioMenuVgmSelect.Size = new Size(180, 22);
+            audioMenuVgmSelect.Size = new Size(141, 22);
             audioMenuVgmSelect.Text = "Select exe";
             audioMenuVgmSelect.Click += audioMenuVgmSelect_Click;
             // 
             // audioMenuVgmGithub
             // 
             audioMenuVgmGithub.Name = "audioMenuVgmGithub";
-            audioMenuVgmGithub.Size = new Size(180, 22);
+            audioMenuVgmGithub.Size = new Size(141, 22);
             audioMenuVgmGithub.Text = "GitHub Page";
             audioMenuVgmGithub.Click += audioMenuVgmGithub_Click;
             // 
@@ -300,8 +301,9 @@
             // 
             fileTree.Location = new Point(12, 144);
             fileTree.Name = "fileTree";
-            fileTree.Size = new Size(288, 294);
+            fileTree.Size = new Size(288, 276);
             fileTree.TabIndex = 12;
+            fileTree.AfterSelect += fileTree_AfterSelect;
             // 
             // ExportModButton
             // 
@@ -322,11 +324,21 @@
             currentWemFile.TabIndex = 15;
             currentWemFile.Text = "Select a WEM in the tree view";
             // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(12, 426);
+            label1.Name = "label1";
+            label1.Size = new Size(38, 15);
+            label1.TabIndex = 16;
+            label1.Text = "label1";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(label1);
             Controls.Add(currentWemFile);
             Controls.Add(ExportModButton);
             Controls.Add(fileTree);
@@ -384,5 +396,6 @@
         private ToolStripMenuItem audioMenuVgm;
         private ToolStripMenuItem audioMenuVgmSelect;
         private ToolStripMenuItem audioMenuVgmGithub;
+        private Label label1;
     }
 }

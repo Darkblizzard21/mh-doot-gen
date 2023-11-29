@@ -60,6 +60,10 @@ namespace RingingBloom.NBNK
                 {
                     name = labels.wemLabels[ids[i]];
                 }
+                else
+                {
+                    name = ids[i].ToString();
+                }
                 Wem newWem = new Wem(name, ids[i], wemDatas[i]);
                 wemList.Add(newWem);
             }
