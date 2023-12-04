@@ -388,30 +388,36 @@
             // 
             // buttonSelectNewFile
             // 
+            buttonSelectNewFile.Enabled = false;
             buttonSelectNewFile.Location = new Point(591, 217);
             buttonSelectNewFile.Name = "buttonSelectNewFile";
             buttonSelectNewFile.Size = new Size(140, 23);
             buttonSelectNewFile.TabIndex = 23;
             buttonSelectNewFile.Text = "Select";
             buttonSelectNewFile.UseVisualStyleBackColor = true;
+            buttonSelectNewFile.Click += buttonSelectNewFile_Click;
             // 
             // buttonPlayNewFile
             // 
+            buttonPlayNewFile.Enabled = false;
             buttonPlayNewFile.Location = new Point(591, 246);
             buttonPlayNewFile.Name = "buttonPlayNewFile";
             buttonPlayNewFile.Size = new Size(140, 23);
             buttonPlayNewFile.TabIndex = 24;
             buttonPlayNewFile.Text = "Play";
             buttonPlayNewFile.UseVisualStyleBackColor = true;
+            buttonPlayNewFile.Click += buttonPlayNewFile_Click;
             // 
             // buttonRemoveNewFile
             // 
+            buttonRemoveNewFile.Enabled = false;
             buttonRemoveNewFile.Location = new Point(591, 275);
             buttonRemoveNewFile.Name = "buttonRemoveNewFile";
             buttonRemoveNewFile.Size = new Size(140, 23);
             buttonRemoveNewFile.TabIndex = 25;
             buttonRemoveNewFile.Text = "Remove";
             buttonRemoveNewFile.UseVisualStyleBackColor = true;
+            buttonRemoveNewFile.Click += buttonRemoveNewFile_Click;
             // 
             // Form1
             // 
