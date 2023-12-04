@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             SLabelWwiseConsole = new Label();
             SelectConsole = new Button();
             labelWwiseConsole = new Label();
@@ -59,9 +60,18 @@
             SLabelHH = new Label();
             fileTree = new TreeView();
             ExportModButton = new Button();
-            currentWemFile = new Label();
-            label1 = new Label();
+            sLableOldFile = new Label();
+            labelOldFile = new Label();
+            buttonPlayOldFile = new Button();
+            oldNewArrow = new PictureBox();
+            helpProvider1 = new HelpProvider();
+            sLabelNewFile = new Label();
+            labelNewFile = new Label();
+            buttonSelectNewFile = new Button();
+            buttonPlayNewFile = new Button();
+            buttonRemoveNewFile = new Button();
             ConfigMenuStrip.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)oldNewArrow).BeginInit();
             SuspendLayout();
             // 
             // SLabelWwiseConsole
@@ -304,6 +314,7 @@
             fileTree.Size = new Size(288, 276);
             fileTree.TabIndex = 12;
             fileTree.AfterSelect += fileTree_AfterSelect;
+            fileTree.MouseDoubleClick += fileTree_MouseDoubleClick;
             // 
             // ExportModButton
             // 
@@ -315,31 +326,107 @@
             ExportModButton.UseVisualStyleBackColor = true;
             ExportModButton.Click += ExportModButton_Click;
             // 
-            // currentWemFile
+            // sLableOldFile
             // 
-            currentWemFile.AutoSize = true;
-            currentWemFile.Location = new Point(306, 148);
-            currentWemFile.Name = "currentWemFile";
-            currentWemFile.Size = new Size(161, 15);
-            currentWemFile.TabIndex = 15;
-            currentWemFile.Text = "Select a WEM in the tree view";
+            sLableOldFile.AutoSize = true;
+            sLableOldFile.Location = new Point(306, 187);
+            sLableOldFile.Name = "sLableOldFile";
+            sLableOldFile.Size = new Size(33, 15);
+            sLableOldFile.TabIndex = 17;
+            sLableOldFile.Text = "OLD:";
             // 
-            // label1
+            // labelOldFile
             // 
-            label1.AutoSize = true;
-            label1.Location = new Point(12, 426);
-            label1.Name = "label1";
-            label1.Size = new Size(38, 15);
-            label1.TabIndex = 16;
-            label1.Text = "label1";
+            labelOldFile.AutoSize = true;
+            labelOldFile.Location = new Point(345, 187);
+            labelOldFile.Name = "labelOldFile";
+            labelOldFile.Size = new Size(120, 15);
+            labelOldFile.TabIndex = 18;
+            labelOldFile.Text = "Select file in tree view";
+            // 
+            // buttonPlayOldFile
+            // 
+            buttonPlayOldFile.Enabled = false;
+            buttonPlayOldFile.Location = new Point(345, 246);
+            buttonPlayOldFile.Name = "buttonPlayOldFile";
+            buttonPlayOldFile.Size = new Size(140, 23);
+            buttonPlayOldFile.TabIndex = 19;
+            buttonPlayOldFile.Text = "Play";
+            buttonPlayOldFile.UseVisualStyleBackColor = true;
+            buttonPlayOldFile.Click += buttonPlayOldFile_Click;
+            // 
+            // oldNewArrow
+            // 
+            oldNewArrow.ErrorImage = (Image)resources.GetObject("oldNewArrow.ErrorImage");
+            oldNewArrow.Image = (Image)resources.GetObject("oldNewArrow.Image");
+            oldNewArrow.ImageLocation = "";
+            oldNewArrow.InitialImage = (Image)resources.GetObject("oldNewArrow.InitialImage");
+            oldNewArrow.Location = new Point(491, 217);
+            oldNewArrow.Name = "oldNewArrow";
+            oldNewArrow.Size = new Size(94, 81);
+            oldNewArrow.SizeMode = PictureBoxSizeMode.Zoom;
+            oldNewArrow.TabIndex = 20;
+            oldNewArrow.TabStop = false;
+            // 
+            // sLabelNewFile
+            // 
+            sLabelNewFile.AutoSize = true;
+            sLabelNewFile.Location = new Point(587, 187);
+            sLabelNewFile.Name = "sLabelNewFile";
+            sLabelNewFile.Size = new Size(36, 15);
+            sLabelNewFile.TabIndex = 21;
+            sLabelNewFile.Text = "NEW:";
+            // 
+            // labelNewFile
+            // 
+            labelNewFile.AutoSize = true;
+            labelNewFile.Location = new Point(629, 187);
+            labelNewFile.Name = "labelNewFile";
+            labelNewFile.Size = new Size(80, 15);
+            labelNewFile.TabIndex = 22;
+            labelNewFile.Text = "SET_BY_CODE";
+            // 
+            // buttonSelectNewFile
+            // 
+            buttonSelectNewFile.Location = new Point(591, 217);
+            buttonSelectNewFile.Name = "buttonSelectNewFile";
+            buttonSelectNewFile.Size = new Size(140, 23);
+            buttonSelectNewFile.TabIndex = 23;
+            buttonSelectNewFile.Text = "Select";
+            buttonSelectNewFile.UseVisualStyleBackColor = true;
+            // 
+            // buttonPlayNewFile
+            // 
+            buttonPlayNewFile.Location = new Point(591, 246);
+            buttonPlayNewFile.Name = "buttonPlayNewFile";
+            buttonPlayNewFile.Size = new Size(140, 23);
+            buttonPlayNewFile.TabIndex = 24;
+            buttonPlayNewFile.Text = "Play";
+            buttonPlayNewFile.UseVisualStyleBackColor = true;
+            // 
+            // buttonRemoveNewFile
+            // 
+            buttonRemoveNewFile.Location = new Point(591, 275);
+            buttonRemoveNewFile.Name = "buttonRemoveNewFile";
+            buttonRemoveNewFile.Size = new Size(140, 23);
+            buttonRemoveNewFile.TabIndex = 25;
+            buttonRemoveNewFile.Text = "Remove";
+            buttonRemoveNewFile.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
-            Controls.Add(label1);
-            Controls.Add(currentWemFile);
+            Controls.Add(buttonRemoveNewFile);
+            Controls.Add(buttonPlayNewFile);
+            Controls.Add(buttonSelectNewFile);
+            Controls.Add(labelNewFile);
+            Controls.Add(sLabelNewFile);
+            Controls.Add(oldNewArrow);
+            Controls.Add(buttonPlayOldFile);
+            Controls.Add(labelOldFile);
+            Controls.Add(sLableOldFile);
             Controls.Add(ExportModButton);
             Controls.Add(fileTree);
             Controls.Add(SLabelHH);
@@ -359,6 +446,7 @@
             Text = "Form1";
             ConfigMenuStrip.ResumeLayout(false);
             ConfigMenuStrip.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)oldNewArrow).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -388,7 +476,6 @@
         private Label SLabelHH;
         private TreeView fileTree;
         private Button ExportModButton;
-        private Label currentWemFile;
         private ToolStripMenuItem audioMenu;
         private ToolStripMenuItem audioMenuBNK;
         private ToolStripMenuItem audioMenuBNKSelect;
@@ -396,6 +483,15 @@
         private ToolStripMenuItem audioMenuVgm;
         private ToolStripMenuItem audioMenuVgmSelect;
         private ToolStripMenuItem audioMenuVgmGithub;
-        private Label label1;
+        private Label sLableOldFile;
+        private Label labelOldFile;
+        private Button buttonPlayOldFile;
+        private PictureBox oldNewArrow;
+        private HelpProvider helpProvider1;
+        private Label sLabelNewFile;
+        private Label labelNewFile;
+        private Button buttonSelectNewFile;
+        private Button buttonPlayNewFile;
+        private Button buttonRemoveNewFile;
     }
 }

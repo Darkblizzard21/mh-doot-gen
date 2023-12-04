@@ -37,8 +37,7 @@ namespace doot_gen
         private string configFile = Directory.GetCurrentDirectory() + @"\config.json";
         private List<Horns> avaibleHorns = new();
         private Dictionary<string, NBNKFile> bankFiles = new();
-        private NBNKFile? currentBank = null;
-        private int currentWem = 0;
+        private System.Media.SoundPlayer? currentWavPlayer = null;
         private string consolePath
         {
             get { return labelWwiseConsole.Text; }
@@ -271,6 +270,19 @@ namespace doot_gen
         {
             fileTree.Visible = b;
             ExportModButton.Visible = b;
+
+            oldNewArrow.Visible = b;
+
+            sLableOldFile.Visible = b;
+            labelOldFile.Visible = b;
+            buttonPlayOldFile.Visible = b;
+
+            sLabelNewFile.Visible = b;
+            labelNewFile.Visible = b;
+            buttonSelectNewFile.Visible = b;
+            buttonPlayNewFile.Visible = b;
+            buttonRemoveNewFile.Visible = b;
+
         }
 
         private void hornSelection_SelectedIndexChanged(object sender, EventArgs e)
@@ -366,23 +378,27 @@ namespace doot_gen
         private void fileTree_AfterSelect(object sender, TreeViewEventArgs e)
         {
             // Allways reset current bank
-            currentBank = null;
+            currentWavPlayer = null;
+            buttonPlayOldFile.Enabled = false;
+            labelOldFile.Text = "Select file in tree view";
 
             if (e.Node == null) { return; }
             if (e.Node.Level != 1) { return; }
             if (!bankFiles.TryGetValue(e.Node.Parent.Text, out NBNKFile file)) { return; }
 
-            List<Wem> wems = file.DataIndex.wemList.Where(wem => wem.name == e.Node.Text).ToList();
+            List<(Wem, int)> wems = file.DataIndex.wemList.Zip(Enumerable.Range(0, file.DataIndex.wemList.Count)).Where(wem => wem.First.name == e.Node.Text).ToList();
             if (wems.Count == 0) { Debug.Assert(false); return; }
-            Wem wem = wems.First();
+            Wem wem = wems.First().Item1;
+            labelOldFile.Text = e.Node.Text;
+
+            string soundPath = gamePath + "\\natives\\STM\\Sound\\Wwise\\";
+            string bankPath = soundPath + e.Node.Parent.Text;
+            string bankFolder = bankPath.Substring(0, bankPath.Length - 4) + "\\";
+            string wavPath = bankFolder + e.Node.Text + ".wem.wav";
 
             if (bnkextrPath != null && vgmstreamPath != null)
             {
-                string soundPath = gamePath + "\\natives\\STM\\Sound\\Wwise\\";
-                string bankPath = soundPath + e.Node.Parent.Text;
-                string bankFolder = bankPath.Substring(0, bankPath.Length - 4) + "\\";
-                string wavPath = bankFolder + e.Node.Text + ".wem.wav";
-                
+
                 // extract file if not there
                 if (!File.Exists(wavPath))
                 {
@@ -409,6 +425,23 @@ namespace doot_gen
                 }
 
             }
+
+            if (File.Exists(wavPath))
+            {
+                currentWavPlayer = new System.Media.SoundPlayer(wavPath);
+                buttonPlayOldFile.Enabled = true;
+            }
+        }
+
+        private void buttonPlayOldFile_Click(object sender, EventArgs e)
+        {
+            if (currentWavPlayer == null) return;
+            currentWavPlayer.Play();
+        }
+
+        private void fileTree_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            buttonPlayOldFile_Click(sender, e);
         }
     }
 }
