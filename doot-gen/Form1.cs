@@ -345,14 +345,38 @@ namespace doot_gen
             if (!File.Exists(consolePath))
             {
                 MessageBox.Show(
-                            "Console Path needed!\n",
+                            "Console Path needed!",
                             "Current path not vaild!\n" +
                             consolePath,
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Exclamation);
                 return;
             }
+            if (!File.Exists(projectPath))
+            {
+                MessageBox.Show(
+                            "Project Path needed!",
+                            "Current path not vaild!\n" +
+                            projectPath,
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Exclamation);
+                return;
+            }
+
             // select file
+            FolderBrowserDialog dialog = new FolderBrowserDialog();
+            dialog.Description = "Output Folder";
+            dialog.InitialDirectory = Directory.GetCurrentDirectory();
+            DialogResult res = dialog.ShowDialog();
+            if (res != DialogResult.OK)
+            {
+                MessageBox.Show(
+                           "Output Path needed!",
+                           "Output Path needed!",
+                           MessageBoxButtons.OK,
+                           MessageBoxIcon.Exclamation);
+                return;
+            } 
 
             // convert files to wem
             string outputPath = Directory.GetCurrentDirectory() + "/tmp/";
@@ -395,6 +419,7 @@ namespace doot_gen
 
             }
             // create infos
+            HornWrapper hornWrapper = (HornWrapper)hornSelection.SelectedItem;
             {
                 string modinfo = modPath + "modinfo.ini";
                 if (File.Exists(modinfo))
@@ -406,7 +431,6 @@ namespace doot_gen
                 {
                     // Add some text to file
 
-                    HornWrapper hornWrapper = (HornWrapper)hornSelection.SelectedItem;
                     byte[] name = new UTF8Encoding(true).GetBytes("name=HH " + hornWrapper.horn.GetHornName() + " Sound Replacement\n");
                     fs.Write(name, 0, name.Length);
                     byte[] description = new UTF8Encoding(true).GetBytes("description=Swaps the melodies of this Hunting Horn\n");
@@ -419,7 +443,7 @@ namespace doot_gen
             }
             // copy image //todo add auto generated images
             {
-                string imgDest = modPath + "screenshot.png"; 
+                string imgDest = modPath + "screenshot.png";
                 string imgSrc = Directory.GetCurrentDirectory() + "\\mhdootgen.png";
                 if (!File.Exists(imgSrc)) { imgSrc = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName + "\\mhdootgen.png"; }
                 if (File.Exists(imgSrc))
@@ -428,7 +452,10 @@ namespace doot_gen
                 }
             }
             // zip together & save zip
-            ZipFile.CreateFromDirectory(modPath, Directory.GetCurrentDirectory() + "\\test.zip");
+            string zipPath = "\\HH " + hornWrapper.horn.GetHornName() + " Sound Replacement.zip";
+            zipPath.Replace(' ', '-');
+            zipPath = dialog.SelectedPath + zipPath;
+            ZipFile.CreateFromDirectory(modPath, zipPath);
             // clear tmp files
             File.Delete(sourcesPath);
             Directory.Delete(outputPath, true);
