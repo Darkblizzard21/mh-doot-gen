@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RingingBloom;
 using RingingBloom.Common;
+using RingingBloom.WWiseTypes;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -341,11 +342,96 @@ namespace doot_gen
 
         private void ExportModButton_Click(object sender, EventArgs e)
         {
-            MessageBox.Show(
-                        "This function still needs to be implemented",
-                        "Not Implemented!",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Exclamation);
+            if (!File.Exists(consolePath))
+            {
+                MessageBox.Show(
+                            "Console Path needed!\n",
+                            "Current path not vaild!\n" +
+                            consolePath,
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Exclamation);
+                return;
+            }
+            // select file
+
+            // convert files to wem
+            string outputPath = Directory.GetCurrentDirectory() + "/tmp/";
+            string sourcesPath = Directory.GetCurrentDirectory() + "/tmp/Wems.wsources";
+
+            WSource.MakeWSource(sourcesPath, bankFiles.SelectMany(info => info.Value.replacements.Values).ToHashSet().ToList());
+
+            var argsBuilder = new StringBuilder();
+            argsBuilder.Append("convert-external-source ");
+            argsBuilder.AppendFormat("\"{0}\" ", projectPath);
+            argsBuilder.AppendFormat("--output \"{0}\" ", outputPath);
+            argsBuilder.AppendFormat("--source-file \"{0}\" ", sourcesPath);
+            Process process = Process.Start(consolePath, argsBuilder.ToString());
+            process.WaitForExit();
+
+            // create banks
+            outputPath += "Windows/";
+            string modPath = outputPath + "mod\\";
+            string modSoundPath = modPath + "natives\\STM\\Sound\\Wwise";
+            if (!Directory.Exists(modSoundPath))
+            {
+                Directory.CreateDirectory(modSoundPath);
+            }
+
+            foreach (var bank in bankFiles)
+            {
+                NBNKFile nbnk = bank.Value.file;
+                foreach (var pair in bank.Value.replacements)
+                {
+                    string name = Path.GetFileName(pair.Value);
+                    string path = outputPath + name.Substring(0, name.Length - 4) + ".wem";
+                    if (!File.Exists(path)) { throw new Exception(path); }
+                    (Wem wem, int idx) oldWem = nbnk.DataIndex.wemList.Zip(Enumerable.Range(0, nbnk.DataIndex.wemList.Count)).Where(wem => wem.First.name == pair.Key).First();
+                    Wem newWem = new Wem(Path.GetFileName(pair.Value), oldWem.wem.id.ToString(), new BinaryReader(File.Open(path, FileMode.Open)));
+                    nbnk.DataIndex.wemList[oldWem.idx] = newWem;
+                }
+
+                string nbnkPath = Path.Combine(modSoundPath, bank.Key);
+                nbnk.ExportNBNK(new BinaryWriter(new FileStream(nbnkPath, FileMode.OpenOrCreate)));
+
+            }
+            // create infos
+            {
+                string modinfo = modPath + "modinfo.ini";
+                if (File.Exists(modinfo))
+                {
+                    File.Delete(modinfo);
+                }
+
+                using (FileStream fs = File.Create(modinfo))
+                {
+                    // Add some text to file
+
+                    HornWrapper hornWrapper = (HornWrapper)hornSelection.SelectedItem;
+                    byte[] name = new UTF8Encoding(true).GetBytes("name=HH " + hornWrapper.horn.GetHornName() + " Sound Replacement\n");
+                    fs.Write(name, 0, name.Length);
+                    byte[] description = new UTF8Encoding(true).GetBytes("description=Swaps the melodies of this Hunting Horn\n");
+                    fs.Write(description, 0, description.Length);
+                    byte[] author = new UTF8Encoding(true).GetBytes("author=Darkblizzard21/mh-doot-gen\n");
+                    fs.Write(author, 0, author.Length);
+                    byte[] category = new UTF8Encoding(true).GetBytes("category=Sounds\n");
+                    fs.Write(category, 0, category.Length);
+                }
+            }
+            // copy image //todo add auto generated images
+            {
+                string imgDest = modPath + "screenshot.png"; 
+                string imgSrc = Directory.GetCurrentDirectory() + "\\mhdootgen.png";
+                if (!File.Exists(imgSrc)) { imgSrc = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName + "\\mhdootgen.png"; }
+                if (File.Exists(imgSrc))
+                {
+                    File.Copy(imgSrc, imgDest, true);
+                }
+            }
+            // zip together & save zip
+            ZipFile.CreateFromDirectory(modPath, Directory.GetCurrentDirectory() + "\\test.zip");
+            // clear tmp files
+            File.Delete(sourcesPath);
+            Directory.Delete(outputPath, true);
         }
 
         private void modEditTable_Paint(object sender, PaintEventArgs e)
