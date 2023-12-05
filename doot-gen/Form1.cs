@@ -34,7 +34,7 @@ namespace doot_gen
     public partial class Form1 : Form
     {
         const int VERSION_MAJOR = 0;
-        const int VERSION_MINOR = 1;
+        const int VERSION_MINOR = 2;
         const int VERSION_PATCH = 0;
 
         private string configFile = Directory.GetCurrentDirectory() + @"\config.json";
