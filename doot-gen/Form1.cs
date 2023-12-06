@@ -1,17 +1,13 @@
-using Microsoft.VisualBasic.Devices;
+using doot_gen.doot_gen;
+using doot_gen.util;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Optional.Unsafe;
 using RingingBloom;
 using RingingBloom.Common;
 using RingingBloom.WWiseTypes;
 using System.Diagnostics;
-using System.IO;
 using System.IO.Compression;
 using System.Text;
-using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
-
 namespace doot_gen
 {
     struct Config
@@ -33,18 +29,11 @@ namespace doot_gen
 
     public partial class Form1 : Form
     {
-        const int VERSION_MAJOR = 0;
-        const int VERSION_MINOR = 2;
-        const int VERSION_PATCH = 0;
-
         private string configFile = Directory.GetCurrentDirectory() + @"\config.json";
         private List<Horns> avaibleHorns = new();
 
         private string? currentBankName = null;
-        private string? currentWavName = null;
-        private Dictionary<string, (NBNKFile file, Dictionary<string, string> replacements)> bankFiles = new();
-        private System.Media.SoundPlayer? currentOldWavPlayer = null;
-        private System.Media.SoundPlayer? currentNewWavPlayer = null;
+        private Dictionary<string, BankData> bankFiles = new();
 
         private OpenFileDialog openReplacementFileDialog = new OpenFileDialog();
 
@@ -106,7 +95,7 @@ namespace doot_gen
         public Form1()
         {
             InitializeComponent();
-            this.Text = "MH DootGen@" + VERSION_MAJOR + "." + VERSION_MINOR + "." + VERSION_PATCH;
+            this.Text = "MH DootGen@" + Version.String();
             hornSelection.AutoCompleteMode = AutoCompleteMode.Suggest;
             hornSelection.AutoCompleteSource = AutoCompleteSource.CustomSource;
 
@@ -316,7 +305,7 @@ namespace doot_gen
                     NBNKFile nbnk = new NBNKFile(readFile, SupportedGames.MHRise);
                     if (nbnk.DataIndex == null) continue;
                     string fileName = Path.GetFileName(file);
-                    bankFiles.Add(fileName, (nbnk, new()));
+                    bankFiles.Add(fileName, new BankData(fileName, nbnk));
                     readFile.Close();
 
                     TreeNode fileNode = new TreeNode();
@@ -342,6 +331,16 @@ namespace doot_gen
 
         private void ExportModButton_Click(object sender, EventArgs e)
         {
+            if (!(hornSelection.SelectedItem is HornWrapper))
+            {
+                MessageBox.Show(
+                            "No horn selected!",
+                            "No horn selected!",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Exclamation);
+                return;
+            }
+            Horns horn = ((HornWrapper)hornSelection.SelectedItem).horn;
             if (!File.Exists(consolePath))
             {
                 MessageBox.Show(
@@ -376,89 +375,9 @@ namespace doot_gen
                            MessageBoxButtons.OK,
                            MessageBoxIcon.Exclamation);
                 return;
-            } 
-
-            // convert files to wem
-            string outputPath = Directory.GetCurrentDirectory() + "/tmp/";
-            string sourcesPath = Directory.GetCurrentDirectory() + "/tmp/Wems.wsources";
-
-            WSource.MakeWSource(sourcesPath, bankFiles.SelectMany(info => info.Value.replacements.Values).ToHashSet().ToList());
-
-            var argsBuilder = new StringBuilder();
-            argsBuilder.Append("convert-external-source ");
-            argsBuilder.AppendFormat("\"{0}\" ", projectPath);
-            argsBuilder.AppendFormat("--output \"{0}\" ", outputPath);
-            argsBuilder.AppendFormat("--source-file \"{0}\" ", sourcesPath);
-            Process process = Process.Start(consolePath, argsBuilder.ToString());
-            process.WaitForExit();
-
-            // create banks
-            outputPath += "Windows/";
-            string modPath = outputPath + "mod\\";
-            string modSoundPath = modPath + "natives\\STM\\Sound\\Wwise";
-            if (!Directory.Exists(modSoundPath))
-            {
-                Directory.CreateDirectory(modSoundPath);
             }
 
-            foreach (var bank in bankFiles)
-            {
-                NBNKFile nbnk = bank.Value.file;
-                foreach (var pair in bank.Value.replacements)
-                {
-                    string name = Path.GetFileName(pair.Value);
-                    string path = outputPath + name.Substring(0, name.Length - 4) + ".wem";
-                    if (!File.Exists(path)) { throw new Exception(path); }
-                    (Wem wem, int idx) oldWem = nbnk.DataIndex.wemList.Zip(Enumerable.Range(0, nbnk.DataIndex.wemList.Count)).Where(wem => wem.First.name == pair.Key).First();
-                    Wem newWem = new Wem(Path.GetFileName(pair.Value), oldWem.wem.id.ToString(), new BinaryReader(File.Open(path, FileMode.Open)));
-                    nbnk.DataIndex.wemList[oldWem.idx] = newWem;
-                }
-
-                string nbnkPath = Path.Combine(modSoundPath, bank.Key);
-                nbnk.ExportNBNK(new BinaryWriter(new FileStream(nbnkPath, FileMode.OpenOrCreate)));
-
-            }
-            // create infos
-            HornWrapper hornWrapper = (HornWrapper)hornSelection.SelectedItem;
-            {
-                string modinfo = modPath + "modinfo.ini";
-                if (File.Exists(modinfo))
-                {
-                    File.Delete(modinfo);
-                }
-
-                using (FileStream fs = File.Create(modinfo))
-                {
-                    // Add some text to file
-
-                    byte[] name = new UTF8Encoding(true).GetBytes("name=HH " + hornWrapper.horn.GetHornName() + " Sound Replacement\n");
-                    fs.Write(name, 0, name.Length);
-                    byte[] description = new UTF8Encoding(true).GetBytes("description=Swaps the melodies of this Hunting Horn\n");
-                    fs.Write(description, 0, description.Length);
-                    byte[] author = new UTF8Encoding(true).GetBytes("author=Darkblizzard21/mh-doot-gen\n");
-                    fs.Write(author, 0, author.Length);
-                    byte[] category = new UTF8Encoding(true).GetBytes("category=Sounds\n");
-                    fs.Write(category, 0, category.Length);
-                }
-            }
-            // copy image //todo add auto generated images
-            {
-                string imgDest = modPath + "screenshot.png";
-                string imgSrc = Directory.GetCurrentDirectory() + "\\mhdootgen.png";
-                if (!File.Exists(imgSrc)) { imgSrc = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName + "\\mhdootgen.png"; }
-                if (File.Exists(imgSrc))
-                {
-                    File.Copy(imgSrc, imgDest, true);
-                }
-            }
-            // zip together & save zip
-            string zipPath = "\\HH " + hornWrapper.horn.GetHornName() + " Sound Replacement.zip";
-            zipPath.Replace(' ', '-');
-            zipPath = dialog.SelectedPath + zipPath;
-            ZipFile.CreateFromDirectory(modPath, zipPath);
-            // clear tmp files
-            File.Delete(sourcesPath);
-            Directory.Delete(outputPath, true);
+            ModExporter.ExportMod(horn, bankFiles.Values, dialog.SelectedPath, consolePath, projectPath);
         }
 
         private void modEditTable_Paint(object sender, PaintEventArgs e)
@@ -510,13 +429,10 @@ namespace doot_gen
         {
             // Allways reset current bank
             currentBankName = null;
-            currentWavName = null;
 
-            currentOldWavPlayer = null;
             buttonPlayOldFile.Enabled = false;
             labelOldFile.Text = "Select file in tree view";
 
-            currentNewWavPlayer = null;
             labelNewFile.Text = "Select replacement file";
             buttonSelectNewFile.Enabled = false;
             buttonPlayNewFile.Enabled = false;
@@ -524,15 +440,13 @@ namespace doot_gen
 
             if (e.Node == null) { return; }
             if (e.Node.Level != 1) { return; }
-            if (!bankFiles.TryGetValue(e.Node.Parent.Text, out (NBNKFile file, Dictionary<string, string> rep) info)) { return; }
-            NBNKFile file = info.file;
+            if (!bankFiles.TryGetValue(e.Node.Parent.Text, out BankData bnk)) { return; }
             currentBankName = e.Node.Parent.Text;
 
-            List<(Wem, int)> wems = file.DataIndex.wemList.Zip(Enumerable.Range(0, file.DataIndex.wemList.Count)).Where(wem => wem.First.name == e.Node.Name).ToList();
+            List<string> wems = bnk.GetWemNames().Where(name => name == e.Node.Name).ToList();
             if (wems.Count == 0) { Debug.Assert(false); return; }
-            Wem wem = wems.First().Item1;
             labelOldFile.Text = e.Node.Name;
-            currentWavName = e.Node.Name;
+            bankFiles[currentBankName].SelectWem(e.Node.Name);
 
             buttonSelectNewFile.Enabled = true;
 
@@ -541,56 +455,19 @@ namespace doot_gen
             string bankFolder = bankPath.Substring(0, bankPath.Length - 4) + "\\";
             string wavPath = bankFolder + e.Node.Name + ".wem.wav";
 
-            if (bnkextrPath != null && vgmstreamPath != null)
-            {
+            bankFiles[currentBankName].LoadOriginalSound(gamePath, bnkextrPath, vgmstreamPath);
 
-                // extract file if not there
-                if (!File.Exists(wavPath))
-                {
-                    Cursor prev = Cursor.Current;
-                    Cursor.Current = Cursors.WaitCursor;
-                    // extract files
-                    Process process = Process.Start(bnkextrPath, bankPath);
-                    process.WaitForExit();
+            buttonPlayOldFile.Enabled = bankFiles[currentBankName].CanPlaySelectedOriginalSound();
 
-                    // convert files
-                    List<Process> processes = new List<Process>();
-                    foreach (var item in Directory.EnumerateFiles(bankFolder))
-                    {
-                        processes.Add(Process.Start(vgmstreamPath, item));
-                    };
-                    processes.ForEach(p => p.WaitForExit());
-
-                    // clean up wems
-                    foreach (var item in Directory.EnumerateFiles(bankFolder).Where(f => f.EndsWith(".wem")))
-                    {
-                        File.Delete(item);
-                    }
-                    Cursor.Current = prev;
-                }
-
-            }
-
-            if (File.Exists(wavPath))
-            {
-                currentOldWavPlayer = new System.Media.SoundPlayer(wavPath);
-                buttonPlayOldFile.Enabled = true;
-            }
-
-            if (info.rep.TryGetValue(e.Node.Name, out string repFile))
-            {
-                labelNewFile.Text = Path.GetFileName(repFile);
-                currentNewWavPlayer = new System.Media.SoundPlayer(repFile);
-
-                buttonPlayNewFile.Enabled = true;
-                buttonRemoveNewFile.Enabled = true;
-            }
+            labelNewFile.Text = bankFiles[currentBankName].selectedReplacementName;
+            buttonPlayNewFile.Enabled = bankFiles[currentBankName].selectedHasReplacement;
+            buttonRemoveNewFile.Enabled = bankFiles[currentBankName].selectedHasReplacement;
         }
 
         private void buttonPlayOldFile_Click(object sender, EventArgs e)
         {
-            if (currentOldWavPlayer == null) return;
-            currentOldWavPlayer.Play();
+            if (currentBankName == null) return;
+            bankFiles[currentBankName].PlaySelectedOriginalSound();
         }
 
         private void fileTree_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -601,39 +478,41 @@ namespace doot_gen
         private void buttonSelectNewFile_Click(object sender, EventArgs e)
         {
             if (currentBankName == null) return;
-            if (currentWavName == null) return;
 
             DialogResult res = openReplacementFileDialog.ShowDialog();
             if (res == DialogResult.OK)
             {
                 // select new file
-                bankFiles[currentBankName].replacements[currentWavName] = openReplacementFileDialog.FileName;
+                bankFiles[currentBankName].ReplaceSelected(openReplacementFileDialog.FileName);
                 labelNewFile.Text = Path.GetFileName(openReplacementFileDialog.FileName);
-                currentNewWavPlayer = new System.Media.SoundPlayer(openReplacementFileDialog.FileName);
-                buttonPlayNewFile.Enabled = true;
-                buttonRemoveNewFile.Enabled = true;
 
+                string currentWavName = bankFiles[currentBankName].selectedWem.ValueOrFailure();
                 TreeNode node = fileTree.Nodes.Find(currentBankName, false).First().Nodes.Find(currentWavName, false).First();
                 node.Text = Path.GetFileName(openReplacementFileDialog.FileName);
-                node.NodeFont = new Font(node.NodeFont, FontStyle.Bold);
+
+                buttonPlayNewFile.Enabled = true;
+                buttonRemoveNewFile.Enabled = true;
             }
         }
 
         private void buttonPlayNewFile_Click(object sender, EventArgs e)
         {
-            if (currentNewWavPlayer == null) return;
-            currentNewWavPlayer.Play();
+            if (currentBankName == null) return;
+            bankFiles[currentBankName].PlaySelectedReplacement();
         }
 
         private void buttonRemoveNewFile_Click(object sender, EventArgs e)
         {
-            if (currentBankName == null) return;
-            if (currentWavName == null) return;
 
-            bankFiles[currentBankName].replacements.Remove(currentWavName);
+            if (currentBankName == null) return;
+            bankFiles[currentBankName].RemoveSelectedReplacement();
+
+            string currentWavName = bankFiles[currentBankName].selectedWem.ValueOrFailure();
             TreeNode node = fileTree.Nodes.Find(currentBankName, false).First().Nodes.Find(currentWavName, false).First();
             node.Text = currentWavName;
-            node.NodeFont = new Font(node.NodeFont, FontStyle.Regular);
+
+            buttonPlayNewFile.Enabled = false;
+            buttonRemoveNewFile.Enabled = false;
         }
     }
 }
