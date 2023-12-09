@@ -359,11 +359,6 @@ namespace doot_gen
             ModExporter.ExportMod(horn, bankFiles.Values, dialog.SelectedPath, consolePath, projectPath);
         }
 
-        private void modEditTable_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
         private void audioMenuVgmSelect_Click(object sender, EventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();
