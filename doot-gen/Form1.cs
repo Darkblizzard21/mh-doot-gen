@@ -156,6 +156,15 @@ namespace doot_gen
             FolderBrowserDialog dialog = new FolderBrowserDialog();
             dialog.Description = "Extracted Game";
             dialog.InitialDirectory = Directory.GetCurrentDirectory();
+            if (Directory.Exists(dialog.InitialDirectory + "\\re_files"))
+            {
+                dialog.InitialDirectory = dialog.InitialDirectory + "\\re_files";
+            }
+            else
+            if (Directory.Exists(dialog.InitialDirectory + "\\..\\..\\..\\..\\re_files"))
+            {
+                dialog.InitialDirectory = dialog.InitialDirectory + "\\..\\..\\..\\..\\re_files";
+            }
             DialogResult res = dialog.ShowDialog();
             if (res == DialogResult.OK)
             {
@@ -366,7 +375,7 @@ namespace doot_gen
             if (res == DialogResult.OK)
             {
                 Debug.WriteLine("Dialog OK - vgmstream-cli.exe is now: " + dialog.FileName);
-                config.SetPath(ConfigPath.VGMStream , dialog.FileName);
+                config.SetPath(ConfigPath.VGMStream, dialog.FileName);
             }
         }
 
