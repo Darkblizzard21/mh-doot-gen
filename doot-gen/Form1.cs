@@ -377,6 +377,7 @@ namespace doot_gen
                 return;
             }
 
+            var cursorOverride = new CursorOverride(Cursors.WaitCursor);
             ModExporter.ExportMod(horn, bankFiles.Values, dialog.SelectedPath, consolePath, projectPath);
         }
 
