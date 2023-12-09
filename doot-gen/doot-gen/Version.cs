@@ -1,4 +1,3 @@
-
 namespace doot_gen
 {
     public static class Version
