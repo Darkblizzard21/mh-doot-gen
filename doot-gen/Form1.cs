@@ -4,6 +4,7 @@ using Optional.Unsafe;
 using RingingBloom;
 using RingingBloom.Common;
 using System.Diagnostics;
+using System.Net;
 using System.Text;
 
 namespace doot_gen
@@ -359,21 +360,6 @@ namespace doot_gen
             ModExporter.ExportMod(horn, bankFiles.Values, dialog.SelectedPath, consolePath, projectPath);
         }
 
-        private void audioMenuVgmSelect_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog dialog = new OpenFileDialog();
-            dialog.InitialDirectory = Directory.GetCurrentDirectory();
-            dialog.Filter = "Executable (*.exe)|*.exe";
-            dialog.Title = "Select vgmstream-cli.exe";
-            dialog.CheckFileExists = true;
-            DialogResult res = dialog.ShowDialog();
-            if (res == DialogResult.OK)
-            {
-                Debug.WriteLine("Dialog OK - vgmstream-cli.exe is now: " + dialog.FileName);
-                config.SetPath(ConfigPath.VGMStream, dialog.FileName);
-            }
-        }
-
         private void audioMenuBNKSelect_Click(object sender, EventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();
@@ -393,10 +379,57 @@ namespace doot_gen
             System.Diagnostics.Process.Start("explorer", "\"https://github.com/eXpl0it3r/bnkextr/releases/tag/2.0\"");
         }
 
+        private void audioMenuBNKGitHubDownload_Click(object sender, EventArgs e)
+        {
+            string targetFile = Directory.GetCurrentDirectory() + "\\bnkextr.exe";
+            if (!File.Exists(targetFile))
+            {
+                Uri url = new Uri("https://www.github.com/eXpl0it3r/bnkextr/releases/download/2.0/bnkextr.exe");
+                using (var client = new WebClient())
+                {
+                    client.DownloadFile(url, targetFile);
+                }
+            }
+            config.SetPath(ConfigPath.BnkExtr, targetFile);
+
+        }
+
+        private void audioMenuVgmSelect_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.InitialDirectory = Directory.GetCurrentDirectory();
+            dialog.Filter = "Executable (*.exe)|*.exe";
+            dialog.Title = "Select vgmstream-cli.exe";
+            dialog.CheckFileExists = true;
+            DialogResult res = dialog.ShowDialog();
+            if (res == DialogResult.OK)
+            {
+                Debug.WriteLine("Dialog OK - vgmstream-cli.exe is now: " + dialog.FileName);
+                config.SetPath(ConfigPath.VGMStream, dialog.FileName);
+            }
+        }
+
         private void audioMenuVgmGithub_Click(object sender, EventArgs e)
         {
             System.Diagnostics.Process.Start("explorer", "\"https://github.com/vgmstream/vgmstream/releases/tag/r1879\"");
+        }
 
+        private void audioMenuVgmGithubDownload_Click(object sender, EventArgs e)
+        {
+            string folder = Directory.GetCurrentDirectory() + "\\vgmstream\\";
+            string targetFile = folder+ "\\vgmstream-cli.exe";
+            if (!File.Exists(targetFile))
+            {
+                string zip = "vgmstream-win" + (System.Environment.Is64BitOperatingSystem ? "64.zip" : ".zip"); 
+                Uri url = new Uri("https://www.github.com//vgmstream/vgmstream/releases/download/r1879/"+ zip);
+                using (var client = new WebClient())
+                {
+                    client.DownloadFile(url, zip);
+                }
+                System.IO.Compression.ZipFile.ExtractToDirectory(zip, folder);
+                File.Delete(zip);
+            }
+            config.SetPath(ConfigPath.VGMStream, targetFile);
         }
 
         private void fileTree_AfterSelect(object sender, TreeViewEventArgs e)

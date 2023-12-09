@@ -49,6 +49,7 @@
             audioMenuBNK = new ToolStripMenuItem();
             audioMenuBNKSelect = new ToolStripMenuItem();
             audioMenuBNKGitHub = new ToolStripMenuItem();
+            audioMenuBNKGitHubDownload = new ToolStripMenuItem();
             audioMenuVgm = new ToolStripMenuItem();
             audioMenuVgmSelect = new ToolStripMenuItem();
             audioMenuVgmGithub = new ToolStripMenuItem();
@@ -70,6 +71,7 @@
             buttonSelectNewFile = new Button();
             buttonPlayNewFile = new Button();
             buttonRemoveNewFile = new Button();
+            audioMenuVgmGithubDownload = new ToolStripMenuItem();
             ConfigMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)oldNewArrow).BeginInit();
             SuspendLayout();
@@ -219,43 +221,50 @@
             // 
             // audioMenuBNK
             // 
-            audioMenuBNK.DropDownItems.AddRange(new ToolStripItem[] { audioMenuBNKSelect, audioMenuBNKGitHub });
+            audioMenuBNK.DropDownItems.AddRange(new ToolStripItem[] { audioMenuBNKSelect, audioMenuBNKGitHub, audioMenuBNKGitHubDownload });
             audioMenuBNK.Name = "audioMenuBNK";
-            audioMenuBNK.Size = new Size(135, 22);
+            audioMenuBNK.Size = new Size(180, 22);
             audioMenuBNK.Text = "bnkextr.exe";
             // 
             // audioMenuBNKSelect
             // 
             audioMenuBNKSelect.Name = "audioMenuBNKSelect";
-            audioMenuBNKSelect.Size = new Size(141, 22);
+            audioMenuBNKSelect.Size = new Size(187, 22);
             audioMenuBNKSelect.Text = "Select exe";
             audioMenuBNKSelect.Click += audioMenuBNKSelect_Click;
             // 
             // audioMenuBNKGitHub
             // 
             audioMenuBNKGitHub.Name = "audioMenuBNKGitHub";
-            audioMenuBNKGitHub.Size = new Size(141, 22);
+            audioMenuBNKGitHub.Size = new Size(187, 22);
             audioMenuBNKGitHub.Text = "GitHub Page";
             audioMenuBNKGitHub.Click += audioMenuBNKGitHub_Click;
             // 
+            // audioMenuBNKGitHubDownload
+            // 
+            audioMenuBNKGitHubDownload.Name = "audioMenuBNKGitHubDownload";
+            audioMenuBNKGitHubDownload.Size = new Size(187, 22);
+            audioMenuBNKGitHubDownload.Text = "Download for GitHub";
+            audioMenuBNKGitHubDownload.Click += audioMenuBNKGitHubDownload_Click;
+            // 
             // audioMenuVgm
             // 
-            audioMenuVgm.DropDownItems.AddRange(new ToolStripItem[] { audioMenuVgmSelect, audioMenuVgmGithub });
+            audioMenuVgm.DropDownItems.AddRange(new ToolStripItem[] { audioMenuVgmSelect, audioMenuVgmGithub, audioMenuVgmGithubDownload });
             audioMenuVgm.Name = "audioMenuVgm";
-            audioMenuVgm.Size = new Size(135, 22);
+            audioMenuVgm.Size = new Size(180, 22);
             audioMenuVgm.Text = "vgmstream";
             // 
             // audioMenuVgmSelect
             // 
             audioMenuVgmSelect.Name = "audioMenuVgmSelect";
-            audioMenuVgmSelect.Size = new Size(141, 22);
+            audioMenuVgmSelect.Size = new Size(198, 22);
             audioMenuVgmSelect.Text = "Select exe";
             audioMenuVgmSelect.Click += audioMenuVgmSelect_Click;
             // 
             // audioMenuVgmGithub
             // 
             audioMenuVgmGithub.Name = "audioMenuVgmGithub";
-            audioMenuVgmGithub.Size = new Size(141, 22);
+            audioMenuVgmGithub.Size = new Size(198, 22);
             audioMenuVgmGithub.Text = "GitHub Page";
             audioMenuVgmGithub.Click += audioMenuVgmGithub_Click;
             // 
@@ -419,6 +428,13 @@
             buttonRemoveNewFile.UseVisualStyleBackColor = true;
             buttonRemoveNewFile.Click += buttonRemoveNewFile_Click;
             // 
+            // audioMenuVgmGithubDownload
+            // 
+            audioMenuVgmGithubDownload.Name = "audioMenuVgmGithubDownload";
+            audioMenuVgmGithubDownload.Size = new Size(198, 22);
+            audioMenuVgmGithubDownload.Text = "Download from GitHub";
+            audioMenuVgmGithubDownload.Click += audioMenuVgmGithubDownload_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -499,5 +515,7 @@
         private Button buttonSelectNewFile;
         private Button buttonPlayNewFile;
         private Button buttonRemoveNewFile;
+        private ToolStripMenuItem audioMenuBNKGitHubDownload;
+        private ToolStripMenuItem audioMenuVgmGithubDownload;
     }
 }
