@@ -1,23 +1,13 @@
 using doot_gen.doot_gen;
 using doot_gen.util;
-using Newtonsoft.Json;
 using Optional.Unsafe;
 using RingingBloom;
 using RingingBloom.Common;
-using RingingBloom.WWiseTypes;
 using System.Diagnostics;
-using System.IO.Compression;
 using System.Text;
+
 namespace doot_gen
 {
-    struct Config
-    {
-        public string consolePath;
-        public string projectPath;
-        public string gamePath;
-        public string? bnkextrPath;
-        public string? vgmstreamPath;
-    }
 
     struct HornWrapper
     {
@@ -36,30 +26,53 @@ namespace doot_gen
         private Dictionary<string, BankData> bankFiles = new();
 
         private OpenFileDialog openReplacementFileDialog = new OpenFileDialog();
+        private Config config = new Config();
 
-        private string consolePath
+        public Form1()
         {
-            get { return labelWwiseConsole.Text; }
-            set { labelWwiseConsole.Text = value; }
-        }
-        private string projectPath
-        {
-            get { return labelWwiseProject.Text; }
-            set { labelWwiseProject.Text = value; }
-        }
+            InitializeComponent();
+            this.Text = "MH DootGen@" + Version.String();
+            hornSelection.AutoCompleteMode = AutoCompleteMode.Suggest;
+            hornSelection.AutoCompleteSource = AutoCompleteSource.CustomSource;
 
-        private string gamePath
-        {
-            get { return labelGameFiles.Text; }
-            set
+            openReplacementFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            openReplacementFileDialog.Filter = "Soundfile (*.wav)|*.wav";
+            openReplacementFileDialog.Title = "Select Audio Replacement File";
+
+            // Set up ui actions
+            config.SetUIAction(ConfigPath.Console, (bool hasValue, string value) =>
             {
-                string soundPath = value + "\\natives\\STM\\Sound\\Wwise\\";
+                if (hasValue)
+                {
+                    labelWwiseConsole.Text = value;
+                }
+                else
+                {
+                    labelWwiseConsole.Text = "N/A";
+                }
+            });
+            config.SetUIAction(ConfigPath.Project, (bool hasValue, string value) =>
+            {
+                if (hasValue)
+                {
+                    labelWwiseProject.Text = value;
+                }
+                else
+                {
+                    labelWwiseProject.Text = "N/A";
+                }
+            });
+            config.SetUIAction(ConfigPath.GameFiles, (bool hasValue, string value) =>
+            {
                 hornSelection.SelectedItem = null;
                 hornSelection.Items.Clear();
                 avaibleHorns.Clear();
 
-                if (Directory.Exists(soundPath))
+                labelGameFiles.Text = hasValue ? value : "N/A";
+                if (hasValue)
                 {
+                    string soundPath = value + "\\natives\\STM\\Sound\\Wwise\\";
+                    if (!Directory.Exists(soundPath)) return;
                     avaibleHorns = HornExtensions.allHorns.Where(horn =>
                     {
                         return horn.ExistingHornFiles(soundPath).Any(); ;
@@ -76,82 +89,37 @@ namespace doot_gen
                 {
                     hornSelection.Items.Add("Select GamePath before selecting Horn");
                 }
-                labelGameFiles.Text = value;
-            }
-        }
-
-        // bnkextrPath
-        private string? bnkextrPath
-        {
-            get { return audioMenuBNKSelect.Text == "Select exe" ? null : audioMenuBNKSelect.Text; }
-            set { audioMenuBNKSelect.Text = value == null ? "Select exe" : value; }
-        }
-        private string? vgmstreamPath
-        {
-            get { return audioMenuVgmSelect.Text == "Select exe" ? null : audioMenuVgmSelect.Text; }
-            set { audioMenuVgmSelect.Text = value == null ? "Select exe" : value; }
-        }
-
-        public Form1()
-        {
-            InitializeComponent();
-            this.Text = "MH DootGen@" + Version.String();
-            hornSelection.AutoCompleteMode = AutoCompleteMode.Suggest;
-            hornSelection.AutoCompleteSource = AutoCompleteSource.CustomSource;
-
-            openReplacementFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            openReplacementFileDialog.Filter = "Soundfile (*.wav)|*.wav";
-            openReplacementFileDialog.Title = "Select Audio Replacement File";
+            });
+            config.SetUIAction(ConfigPath.BnkExtr, (bool hasValue, string value) =>
+            {
+                if (hasValue)
+                {
+                    audioMenuBNKSelect.Text = value;
+                }
+                else
+                {
+                    audioMenuBNKSelect.Text = "Select exe";
+                }
+            });
+            config.SetUIAction(ConfigPath.VGMStream, (bool hasValue, string value) =>
+            {
+                if (hasValue)
+                {
+                    audioMenuVgmSelect.Text = value;
+                }
+                else
+                {
+                    audioMenuVgmSelect.Text = "Select exe";
+                }
+            });
 
             ToggleModEditVisiblity(false);
 
             if (File.Exists(configFile))
             {
-                LoadConfig();
-            }
-            else
-            {
-                ResetConfig();
+                config.LoadPathsFrom(configFile);
             }
         }
-
-        void LoadConfig()
-        {
-            Debug.WriteLine("Loading config from " + configFile);
-            StreamReader stream = File.OpenText(configFile);
-            Config config = JsonConvert.DeserializeObject<Config>(stream.ReadToEnd());
-            stream.Close();
-
-            consolePath = config.consolePath;
-            projectPath = config.projectPath;
-            gamePath = config.gamePath;
-            bnkextrPath = config.bnkextrPath;
-            vgmstreamPath = config.vgmstreamPath;
-        }
-        void SaveConfig()
-        {
-            Debug.WriteLine("Saving config to " + configFile);
-            Config config;
-            config.consolePath = consolePath;
-            config.projectPath = projectPath;
-            config.gamePath = gamePath;
-            config.bnkextrPath = bnkextrPath;
-            config.vgmstreamPath = vgmstreamPath;
-            string json = JsonConvert.SerializeObject(config);
-            StreamWriter file = File.CreateText(configFile);
-            file.Write(json);
-            file.Close();
-        }
-
-        void ResetConfig()
-        {
-            Debug.WriteLine("Config reset");
-            consolePath = "N/A";
-            projectPath = "N/A";
-            gamePath = "N/A";
-        }
-
-
 
         private void SelectConsole_Click(object sender, EventArgs e)
         {
@@ -164,7 +132,7 @@ namespace doot_gen
             if (res == DialogResult.OK)
             {
                 Debug.WriteLine("Dialog OK - Console is now: " + dialog.FileName);
-                consolePath = dialog.FileName;
+                config.SetPath(ConfigPath.Console, dialog.FileName);
             }
         }
 
@@ -179,7 +147,7 @@ namespace doot_gen
             if (res == DialogResult.OK)
             {
                 Debug.WriteLine("Dialog OK - Project is now: " + dialog.FileName);
-                projectPath = dialog.FileName;
+                config.SetPath(ConfigPath.Project, dialog.FileName);
             }
         }
 
@@ -203,18 +171,18 @@ namespace doot_gen
                     return;
                 }
                 Debug.WriteLine("Dialog OK - GameFolder is now: " + dialog.SelectedPath);
-                gamePath = dialog.SelectedPath;
+                config.SetPath(ConfigPath.GameFiles, dialog.SelectedPath);
             }
         }
 
         private void ConfigMenuReset_Click(object sender, EventArgs e)
         {
-            ResetConfig();
+            config.Reset();
         }
 
         private void ConfigMenuSave_Click(object sender, EventArgs e)
         {
-            SaveConfig();
+            config.SaveTo(configFile);
         }
 
         private void ConfigMenuSaveTo_Click(object sender, EventArgs e)
@@ -229,7 +197,7 @@ namespace doot_gen
             {
                 Debug.WriteLine("Dialog OK - ConfigFils is now: " + dialog.FileName);
                 configFile = dialog.FileName;
-                SaveConfig();
+                config.SaveTo(configFile);
             }
         }
 
@@ -245,13 +213,13 @@ namespace doot_gen
             {
                 Debug.WriteLine("Dialog OK - ConfigFils is now: " + dialog.FileName);
                 configFile = dialog.FileName;
-                LoadConfig();
+                config.LoadPathsFrom(configFile);
             }
         }
 
         private void ConfigMenuReload_Click(object sender, EventArgs e)
         {
-            LoadConfig();
+            config.LoadPathsFrom(configFile);
         }
 
         private void HelpHornIds_Click(object sender, EventArgs e)
@@ -294,10 +262,11 @@ namespace doot_gen
             fileTree.Nodes.Clear();
 
             ToggleModEditVisiblity(false);
-            if (hornSelection.SelectedItem is HornWrapper)
+            if (hornSelection.SelectedItem is HornWrapper
+                && config.PathAvailible(ConfigPath.GameFiles))
             {
                 ToggleModEditVisiblity(true);
-                string soundPath = gamePath + "\\natives\\STM\\Sound\\Wwise\\";
+                string soundPath = config.GetPath(ConfigPath.GameFiles) + "\\natives\\STM\\Sound\\Wwise\\";
                 HornWrapper hornWrapper = (HornWrapper)hornSelection.SelectedItem;
                 foreach (var file in hornWrapper.horn.ExistingHornFiles(soundPath))
                 {
@@ -341,7 +310,7 @@ namespace doot_gen
                 return;
             }
             Horns horn = ((HornWrapper)hornSelection.SelectedItem).horn;
-            if (!File.Exists(consolePath))
+            if (!config.TryGetPath(ConfigPath.Console, out string consolePath) || !File.Exists(consolePath))
             {
                 MessageBox.Show(
                             "Console Path needed!",
@@ -351,7 +320,7 @@ namespace doot_gen
                             MessageBoxIcon.Exclamation);
                 return;
             }
-            if (!File.Exists(projectPath))
+            if (!config.TryGetPath(ConfigPath.Project, out string projectPath) || !File.Exists(projectPath))
             {
                 MessageBox.Show(
                             "Project Path needed!",
@@ -397,7 +366,7 @@ namespace doot_gen
             if (res == DialogResult.OK)
             {
                 Debug.WriteLine("Dialog OK - vgmstream-cli.exe is now: " + dialog.FileName);
-                vgmstreamPath = dialog.FileName;
+                config.SetPath(ConfigPath.VGMStream , dialog.FileName);
             }
         }
 
@@ -412,7 +381,7 @@ namespace doot_gen
             if (res == DialogResult.OK)
             {
                 Debug.WriteLine("Dialog OK - bnkextr.exe is now: " + dialog.FileName);
-                bnkextrPath = dialog.FileName;
+                config.SetPath(ConfigPath.BnkExtr, dialog.FileName);
             }
         }
         private void audioMenuBNKGitHub_Click(object sender, EventArgs e)
@@ -450,6 +419,10 @@ namespace doot_gen
             bankFiles[currentBankName].SelectWem(e.Node.Name);
 
             buttonSelectNewFile.Enabled = true;
+
+            if (!config.TryGetPath(ConfigPath.GameFiles, out string gamePath)
+                || !config.TryGetPath(ConfigPath.GameFiles, out string bnkextrPath)
+                || !config.TryGetPath(ConfigPath.GameFiles, out string vgmstreamPath)) return;
 
             string soundPath = gamePath + "\\natives\\STM\\Sound\\Wwise\\";
             string bankPath = soundPath + e.Node.Parent.Text;
