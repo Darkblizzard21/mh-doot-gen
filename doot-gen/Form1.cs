@@ -458,8 +458,8 @@ namespace doot_gen
             buttonSelectNewFile.Enabled = true;
 
             if (!config.TryGetPath(ConfigPath.GameFiles, out string gamePath)
-                || !config.TryGetPath(ConfigPath.GameFiles, out string bnkextrPath)
-                || !config.TryGetPath(ConfigPath.GameFiles, out string vgmstreamPath)) return;
+                || !config.TryGetPath(ConfigPath.BnkExtr, out string bnkextrPath)
+                || !config.TryGetPath(ConfigPath.VGMStream, out string vgmstreamPath)) return;
 
             string soundPath = gamePath + "\\natives\\STM\\Sound\\Wwise\\";
             string bankPath = soundPath + e.Node.Parent.Text;
