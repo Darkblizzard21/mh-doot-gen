@@ -158,6 +158,10 @@ namespace doot_gen.doot_gen
                     // extract files
                     Process process = Process.Start(bnkextrPath, bankPath);
                     process.WaitForExit();
+                    if (process.ExitCode != 0)
+                    {
+                        Logger.Warn("Extracting file  \""+ wavPath + "\" failed with exit code " + process.ExitCode.ToString());
+                    }
 
                     // convert files
                     List<Process> processes = new List<Process>();
@@ -171,7 +175,7 @@ namespace doot_gen.doot_gen
                     {
                         if (p.ExitCode != 0)
                         {
-                            Logger.Info("Convert File: A file failed");
+                            Logger.Info("Convert File: A file failed with exit code: " + p.ExitCode.ToString());
                         }
                     });
                     // clean up wems
