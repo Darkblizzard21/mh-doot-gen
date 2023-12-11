@@ -86,4 +86,6 @@ jobs:
           ${{ runner.os }}-nuget
     - name: Install dependencies
       run: 
-        dotnet add doot-gen/doot-gen.csproj package Newtonsoft.Json --version 13.0.3
+        dotnet restore .\doot-gen\doot-gen.csproj
+    - name: Build
+      run: dotnet build .\doot-gen\doot-gen.csproj
