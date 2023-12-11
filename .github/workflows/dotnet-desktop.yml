@@ -72,17 +72,19 @@ jobs:
       Wap_Project_Path: your-wap-project-path                   # Replace with the path to your Wap project, i.e. MyWpf.App.Package\MyWpfApp.Package.wapproj.
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-
-    # Install the .NET Core workload
-    - name: Install .NET Core
+    - uses: actions/checkout@v4
+    - name: Setup dotnet
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 8.0.x
-
-    # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
-    - name: Setup MSBuild.exe
-      uses: microsoft/setup-msbuild@v1.0.2
+        dotnet-version: '6.0.x'
+    - uses: actions/cache@v3
+      with:
+        path: ~/.nuget/packages
+        # Look to see if there is a cache hit for the corresponding requirements file
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget
+    - name: Install dependencies
+      run: 
+        dotnet add package Newtonsoft.Json --version 13.0.3
+        dotnet add package Optional --version 4.0.0
