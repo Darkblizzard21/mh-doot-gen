@@ -53,10 +53,12 @@
             audioMenuVgm = new ToolStripMenuItem();
             audioMenuVgmSelect = new ToolStripMenuItem();
             audioMenuVgmGithub = new ToolStripMenuItem();
+            audioMenuVgmGithubDownload = new ToolStripMenuItem();
             HelpMenu = new ToolStripMenuItem();
             HelpGitHubPage = new ToolStripMenuItem();
             HelpHornIds = new ToolStripMenuItem();
             HelpModdingWiki = new ToolStripMenuItem();
+            HelpLogToFile = new ToolStripMenuItem();
             hornSelection = new ComboBox();
             SLabelHH = new Label();
             fileTree = new TreeView();
@@ -71,7 +73,6 @@
             buttonSelectNewFile = new Button();
             buttonPlayNewFile = new Button();
             buttonRemoveNewFile = new Button();
-            audioMenuVgmGithubDownload = new ToolStripMenuItem();
             ConfigMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)oldNewArrow).BeginInit();
             SuspendLayout();
@@ -223,7 +224,7 @@
             // 
             audioMenuBNK.DropDownItems.AddRange(new ToolStripItem[] { audioMenuBNKSelect, audioMenuBNKGitHub, audioMenuBNKGitHubDownload });
             audioMenuBNK.Name = "audioMenuBNK";
-            audioMenuBNK.Size = new Size(180, 22);
+            audioMenuBNK.Size = new Size(135, 22);
             audioMenuBNK.Text = "bnkextr.exe";
             // 
             // audioMenuBNKSelect
@@ -251,7 +252,7 @@
             // 
             audioMenuVgm.DropDownItems.AddRange(new ToolStripItem[] { audioMenuVgmSelect, audioMenuVgmGithub, audioMenuVgmGithubDownload });
             audioMenuVgm.Name = "audioMenuVgm";
-            audioMenuVgm.Size = new Size(180, 22);
+            audioMenuVgm.Size = new Size(135, 22);
             audioMenuVgm.Text = "vgmstream";
             // 
             // audioMenuVgmSelect
@@ -268,9 +269,16 @@
             audioMenuVgmGithub.Text = "GitHub Page";
             audioMenuVgmGithub.Click += audioMenuVgmGithub_Click;
             // 
+            // audioMenuVgmGithubDownload
+            // 
+            audioMenuVgmGithubDownload.Name = "audioMenuVgmGithubDownload";
+            audioMenuVgmGithubDownload.Size = new Size(198, 22);
+            audioMenuVgmGithubDownload.Text = "Download from GitHub";
+            audioMenuVgmGithubDownload.Click += audioMenuVgmGithubDownload_Click;
+            // 
             // HelpMenu
             // 
-            HelpMenu.DropDownItems.AddRange(new ToolStripItem[] { HelpGitHubPage, HelpHornIds, HelpModdingWiki });
+            HelpMenu.DropDownItems.AddRange(new ToolStripItem[] { HelpGitHubPage, HelpHornIds, HelpModdingWiki, HelpLogToFile });
             HelpMenu.Name = "HelpMenu";
             HelpMenu.Size = new Size(44, 20);
             HelpMenu.Text = "Help";
@@ -278,23 +286,30 @@
             // HelpGitHubPage
             // 
             HelpGitHubPage.Name = "HelpGitHubPage";
-            HelpGitHubPage.Size = new Size(141, 22);
+            HelpGitHubPage.Size = new Size(180, 22);
             HelpGitHubPage.Text = "GitHub Page";
             HelpGitHubPage.Click += HelpGitHubPage_Click;
             // 
             // HelpHornIds
             // 
             HelpHornIds.Name = "HelpHornIds";
-            HelpHornIds.Size = new Size(141, 22);
+            HelpHornIds.Size = new Size(180, 22);
             HelpHornIds.Text = "HornIds";
             HelpHornIds.Click += HelpHornIds_Click;
             // 
             // HelpModdingWiki
             // 
             HelpModdingWiki.Name = "HelpModdingWiki";
-            HelpModdingWiki.Size = new Size(141, 22);
+            HelpModdingWiki.Size = new Size(180, 22);
             HelpModdingWiki.Text = "ModingWiki";
             HelpModdingWiki.Click += HelpModdingWiki_Click;
+            // 
+            // HelpLogToFile
+            // 
+            HelpLogToFile.Name = "HelpLogToFile";
+            HelpLogToFile.Size = new Size(180, 22);
+            HelpLogToFile.Text = "Log to File";
+            HelpLogToFile.Click += HelpLogToFile_Click;
             // 
             // hornSelection
             // 
@@ -428,13 +443,6 @@
             buttonRemoveNewFile.UseVisualStyleBackColor = true;
             buttonRemoveNewFile.Click += buttonRemoveNewFile_Click;
             // 
-            // audioMenuVgmGithubDownload
-            // 
-            audioMenuVgmGithubDownload.Name = "audioMenuVgmGithubDownload";
-            audioMenuVgmGithubDownload.Size = new Size(198, 22);
-            audioMenuVgmGithubDownload.Text = "Download from GitHub";
-            audioMenuVgmGithubDownload.Click += audioMenuVgmGithubDownload_Click;
-            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -517,5 +525,6 @@
         private Button buttonRemoveNewFile;
         private ToolStripMenuItem audioMenuBNKGitHubDownload;
         private ToolStripMenuItem audioMenuVgmGithubDownload;
+        private ToolStripMenuItem HelpLogToFile;
     }
 }

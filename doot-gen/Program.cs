@@ -1,3 +1,5 @@
+using doot_gen.util;
+
 namespace doot_gen
 {
     internal static class Program
@@ -12,6 +14,8 @@ namespace doot_gen
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
             Application.Run(new Form1());
+
+
         }
     }
 }

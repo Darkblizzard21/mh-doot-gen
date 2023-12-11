@@ -53,6 +53,12 @@ namespace doot_gen.doot_gen
             return found;
         }
 
+        public Option<string> GetPathOpt(ConfigPath path)
+        {
+            if (TryGetPath(path, out string value)) return value.Some();
+            return Option.None<string>();   
+        }
+
         public void SetPath(ConfigPath path, string value)
         {
             paths[path] = value;

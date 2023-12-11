@@ -15,7 +15,8 @@ namespace doot_gen.doot_gen
         {
             public Replacement(string path)
             {
-                if (!File.Exists(path)) { throw new Exception("Replacement can not be created because file dose not exist."); }
+                if (!File.Exists(path)) { throw new DootExeption("Replacement can not be created because file dose not exist."); }
+                Logger.Info("BankData::Replacement invoked with path: \"" + path + "\"");
                 this.path = path;
                 this.filename = Path.GetFileName(path);
                 this.player = new System.Media.SoundPlayer(path);
@@ -39,25 +40,29 @@ namespace doot_gen.doot_gen
 
         public void SelectWem(string wem)
         {
-            if (!GetWemNames().Contains(wem)) { throw new Exception("wem not in possible wems"); }
+            Logger.Info("BankData::SelectWem invoked with wem: \"" + wem + "\"");
+            if (!GetWemNames().Contains(wem)) { throw new DootExeption("wem not in possible wems"); }
             selectedWem = wem.Some();
         }
 
         public void ReplaceSelected(string replacementFile)
         {
-            if (!selectedWem.HasValue) { throw new Exception("nothing is selected"); }
+            Logger.Info("BankData::ReplaceSelected invoked with replacementFile: \"" + replacementFile + "\"");
+            if (!selectedWem.HasValue) { throw new DootExeption("nothing is selected"); }
             replacements[selectedWem.ValueOrFailure()] = new Replacement(replacementFile);
         }
 
         public void RemoveSelectedReplacement()
         {
-            if (!selectedWem.HasValue) { throw new Exception("nothing is selected"); }
+            Logger.Info("BankData::RemoveSelectedReplacement invoked");
+            if (!selectedWem.HasValue) { throw new DootExeption("nothing is selected"); }
             selectedWem.DoIfPresent(wem => replacements.Remove(wem));
 
         }
 
         public void PlaySelectedReplacement()
         {
+            Logger.Info("BankData::PlaySelectedReplacement invoked");
             selectedWem.DoIfPresent(str =>
             {
                 replacements.GetValueOrNone(str).DoIfPresent(rep => rep.player.Play());
@@ -66,6 +71,7 @@ namespace doot_gen.doot_gen
 
         public IEnumerable<string> GetWemNames()
         {
+            Logger.Info("BankData::GetWemNames invoked");
             foreach (var wem in file.DataIndex.wemList)
             {
                 yield return wem.name;
@@ -73,6 +79,7 @@ namespace doot_gen.doot_gen
         }
         public IEnumerable<string> GetReplacementFilePaths()
         {
+            Logger.Info("BankData::GetReplacementFilePaths invoked");
             return replacements.Values.Select(rep => rep.path).ToList();
         }
 
@@ -80,31 +87,37 @@ namespace doot_gen.doot_gen
         /// <param name="workingDir"></param>
         public void ExportReplacementsTo(string exportPath, string workingDir)
         {
+            Logger.Info("BankData::ExportReplacementsTo invoked with: ");
+            Logger.Info("exportPath: \"" + exportPath + "\"");
+            Logger.Info("workingDir: \"" + workingDir + "\"");
             replacements.ForEach(pair =>
             {
                 var key = pair.Key;
                 var rep = pair.Value;
                 string name = rep.filename;
                 string path = workingDir + name.Substring(0, name.Length - 4) + ".wem";
-                if (!File.Exists(path)) { throw new Exception(path); }
+                if (!File.Exists(path)) { throw new DootExeption(path); }
 
                 (Wem wem, int idx) oldWem = file.DataIndex.wemList.Zip(Enumerable.Range(0, file.DataIndex.wemList.Count)).Where(wem => wem.First.name == key).First();
-                Wem newWem = new Wem(rep.filename, oldWem.wem.id.ToString(), new BinaryReader(File.Open(path, FileMode.Open)));
+                Wem newWem = new Wem(oldWem.wem.name, oldWem.wem.id.ToString(), new BinaryReader(File.Open(path, FileMode.Open)));
                 file.DataIndex.wemList[oldWem.idx] = newWem;
             });
 
             string nbnkPath = Path.Combine(exportPath, name);
             file.ExportNBNK(new BinaryWriter(new FileStream(nbnkPath, FileMode.OpenOrCreate)));
+            
         }
 
         // Sound functions
         public bool CanPlaySelectedOriginalSound()
         {
+            Logger.Info("BankData::CanPlaySelectedOriginalSound invoked");
             return selectedWem.FlatMap(str => originalSounds.GetValueOrNone(str)).HasValue;
         }
 
         public void PlaySelectedOriginalSound()
         {
+            Logger.Info("BankData::PlaySelectedOriginalSound invoked");
             selectedWem.DoIfPresent(str =>
             {
                 originalSounds.GetValueOrNone(str).DoIfPresent(player => player.Play());
@@ -114,16 +127,30 @@ namespace doot_gen.doot_gen
 
         public void LoadOriginalSound(string gamePath, string? bnkextrPath, string? vgmstreamPath)
         {
+            Logger.Info("BankData::LoadOriginalSound invoked");
+            Logger.Info("gamePath:      \"" + gamePath + "\"");
+            Logger.Info("bnkextrPath:   \"" + bnkextrPath + "\"");
+            Logger.Info("vgmstreamPath: \"" + vgmstreamPath + "\"");
             if (bnkextrPath == null || vgmstreamPath == null) return;
 
             string soundPath = gamePath + "\\natives\\STM\\Sound\\Wwise\\";
             string bankPath = soundPath + name;
             string bankFolder = bankPath.Substring(0, bankPath.Length - 4) + "\\";
 
+            Logger.Info("soundPath:  \"" + soundPath + "\"");
+            Logger.Info("bankPath:   \"" + bankPath + "\"");
+            Logger.Info("bankFolder: \"" + bankFolder + "\"");
+
+            if (!Directory.Exists(bankFolder))
+            {
+                Directory.CreateDirectory(bankFolder);
+                Logger.Info("created bankFolder: \"" + bankFolder + "\"");
+            }
+
             var curOverride = new CursorOverride(Cursors.WaitCursor);
             foreach (var wemName in GetWemNames())
             {
-                if(originalSounds.ContainsKey(wemName)) { continue; }
+                if (originalSounds.ContainsKey(wemName)) { continue; }
                 string wavPath = bankFolder + wemName + ".wem.wav";
                 // extract file if not there
                 if (!File.Exists(wavPath))
@@ -136,22 +163,35 @@ namespace doot_gen.doot_gen
                     List<Process> processes = new List<Process>();
                     foreach (var item in Directory.EnumerateFiles(bankFolder))
                     {
+                        Logger.Info("Convert File: \"" + item + "\"");
                         processes.Add(Process.Start(vgmstreamPath, item));
                     };
                     processes.ForEach(p => p.WaitForExit());
-
+                    processes.ForEach(p =>
+                    {
+                        if (p.ExitCode != 0)
+                        {
+                            Logger.Info("Convert File: A file failed");
+                        }
+                    });
                     // clean up wems
                     foreach (var item in Directory.EnumerateFiles(bankFolder).Where(f => f.EndsWith(".wem")))
                     {
+                        Logger.Info("Deleted File during cleanup: \"" + item + "\"");
                         File.Delete(item);
                     }
                 }
 
                 if (File.Exists(wavPath))
                 {
+                    Logger.Info("Selected File for replay: \"" + wavPath + "\"");
                     originalSounds[wemName] = new System.Media.SoundPlayer(wavPath);
                 }
-            }            
+                else
+                {
+                    Logger.Info("Selected File for replay: Convertion failed \"" + wavPath + "\"");
+                }
+            }
         }
     }
 }
