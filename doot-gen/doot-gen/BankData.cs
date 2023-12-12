@@ -105,7 +105,7 @@ namespace doot_gen.doot_gen
 
             string nbnkPath = Path.Combine(exportPath, name);
             file.ExportNBNK(new BinaryWriter(new FileStream(nbnkPath, FileMode.OpenOrCreate)));
-            
+
         }
 
         // Sound functions
@@ -156,11 +156,22 @@ namespace doot_gen.doot_gen
                 if (!File.Exists(wavPath))
                 {
                     // extract files
-                    Process process = Process.Start(bnkextrPath, bankPath);
+                    ProcessStartInfo processStartInfo = new ProcessStartInfo();
+                    processStartInfo.FileName = bnkextrPath;
+                    processStartInfo.Arguments = bankPath;
+                    processStartInfo.UseShellExecute = false;
+                    processStartInfo.RedirectStandardOutput = true;
+                    processStartInfo.CreateNoWindow = true;
+                    Process process = Process.Start(startInfo: processStartInfo);
                     process.WaitForExit();
                     if (process.ExitCode != 0)
                     {
-                        Logger.Warn("Extracting file  \""+ wavPath + "\" failed with exit code " + process.ExitCode.ToString());
+                        Logger.Warn("Extracting file  \"" + wavPath + "\" failed with exit code " + process.ExitCode.ToString());
+                    }
+                    string? line;
+                    while ((line = process.StandardOutput.ReadLine()) != null)
+                    {
+                        Logger.Log(line, process.ExitCode == 0 ? LogLevel.Info : LogLevel.Warn);
                     }
 
                     // convert files
