@@ -78,11 +78,11 @@ jobs:
 
     # Upload release artifacts
     - name: Copy extract-rise-pak.bat to output folder
-      uses: canastro/copy-file-action@master
       if: matrix.configuration == 'Release'
-      with:
-        source: "extract-rise-pak.bat"
-        target: ".\\${{matrix.configuration}}\\extract-rise-pak.bat"
+      shell: pwsh
+      run: |
+        cp .\extract-rise-pak.bat .\Release\extract-rise-pak.bat 
+        cp .\LICENSE .\Release\LICENSE.txt 
     - name: Upload
       uses: actions/upload-artifact@v3
       if: matrix.configuration == 'Release'
