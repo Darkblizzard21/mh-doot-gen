@@ -74,7 +74,7 @@ jobs:
       run: 
         dotnet restore .\doot-gen\doot-gen.csproj
     - name: Build
-      run: dotnet build .\doot-gen\doot-gen.csproj -o .\${{matrix.configuration}} -c ${{matrix.configuration}}
+      run: dotnet build .\doot-gen\doot-gen.csproj -o .\${{matrix.configuration}} -c ${{matrix.configuration}} --property WarningLevel=0
 
     # Upload release artifacts
     - name: Copy extract-rise-pak.bat to output folder
@@ -83,6 +83,7 @@ jobs:
       run: |
         cp .\extract-rise-pak.bat .\Release\extract-rise-pak.bat 
         cp .\LICENSE .\Release\LICENSE.txt 
+        cp .\doot-gen\mhdootgen.png .\Release\mhdootgen.png 
     - name: Upload
       uses: actions/upload-artifact@v3
       if: matrix.configuration == 'Release'

@@ -179,7 +179,7 @@ namespace doot_gen.doot_gen
                     foreach (var item in Directory.EnumerateFiles(bankFolder))
                     {
                         Logger.Info("Convert File: \"" + item + "\"");
-                        processes.Add(Process.Start(vgmstreamPath, item));
+                        processes.Add(Process.Start(vgmstreamPath,item.WrapInEnumrable()));
                     };
                     processes.ForEach(p => p.WaitForExit());
                     processes.ForEach(p =>

@@ -7,5 +7,10 @@ namespace doot_gen.util
         {
             foreach (var item in values) { func(item); }
         }
+
+        public static IEnumerable<T> WrapInEnumrable<T>(this T self)
+        {
+            yield return self;
+        }
     }
 }
