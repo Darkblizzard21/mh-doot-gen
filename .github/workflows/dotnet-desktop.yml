@@ -70,19 +70,19 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '8.0.x'
-    - uses: actions/cache@v3
-      with:
-        path: ~/.nuget/packages
-        # Look to see if there is a cache hit for the corresponding requirements file
-        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
-        restore-keys: |
-          ${{ runner.os }}-nuget
     - name: Install dependencies
       run: 
         dotnet restore .\doot-gen\doot-gen.csproj
     - name: Build
       run: dotnet build .\doot-gen\doot-gen.csproj -o .\${{matrix.configuration}} -c ${{matrix.configuration}}
 
+    # Upload release artifacts
+    - name: Copy extract-rise-pak.bat to output folder
+      uses: canastro/copy-file-action@master
+      if: matrix.configuration == 'Release'
+      with:
+        source: "extract-rise-pak.bat"
+        target: ".\\${{matrix.configuration}}\\extract-rise-pak.bat"
     - name: Upload
       uses: actions/upload-artifact@v3
       if: matrix.configuration == 'Release'
