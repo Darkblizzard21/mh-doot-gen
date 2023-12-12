@@ -1,5 +1,7 @@
 using doot_gen.doot_gen;
 using doot_gen.util;
+using Optional;
+using Optional.Collections;
 using Optional.Unsafe;
 using RingingBloom;
 using RingingBloom.Common;
@@ -172,12 +174,9 @@ namespace doot_gen
                 string soundPath = dialog.SelectedPath + "\\natives\\STM\\Sound\\Wwise\\";
                 if (!Directory.Exists(soundPath))
                 {
-                    MessageBox.Show(
-                        "Expected Monster Hunter Rise File structure:\n"
+                    Logger.Warn("Expected Monster Hunter Rise File structure:\n"
                         + "%GAME_PATH%\\natives\\STM\\Sound\\Wwise",
-                        "Invalid Folder",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Exclamation);
+                        "Invalid Folder");
                     return;
                 }
                 Debug.WriteLine("Dialog OK - GameFolder is now: " + dialog.SelectedPath);
@@ -312,32 +311,18 @@ namespace doot_gen
         {
             if (!(hornSelection.SelectedItem is HornWrapper))
             {
-                MessageBox.Show(
-                            "No horn selected!",
-                            "No horn selected!",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Exclamation);
+                Logger.Warn("No horn selected!");
                 return;
             }
             Horns horn = ((HornWrapper)hornSelection.SelectedItem).horn;
             if (!config.TryGetPath(ConfigPath.Console, out string consolePath) || !File.Exists(consolePath))
             {
-                MessageBox.Show(
-                            "Console Path needed!",
-                            "Current path not vaild!\n" +
-                            consolePath,
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Exclamation);
+                Logger.Warn("Current path not vaild!\n" + consolePath);
                 return;
             }
             if (!config.TryGetPath(ConfigPath.Project, out string projectPath) || !File.Exists(projectPath))
             {
-                MessageBox.Show(
-                            "Project Path needed!",
-                            "Current path not vaild!\n" +
-                            projectPath,
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Exclamation);
+                Logger.Warn("Current path not vaild!\n" + projectPath);
                 return;
             }
 
@@ -348,11 +333,7 @@ namespace doot_gen
             DialogResult res = dialog.ShowDialog();
             if (res != DialogResult.OK)
             {
-                MessageBox.Show(
-                           "Output Path needed!",
-                           "Output Path needed!",
-                           MessageBoxButtons.OK,
-                           MessageBoxIcon.Exclamation);
+                Logger.Warn("Output Path needed!");
                 return;
             }
 
@@ -417,11 +398,11 @@ namespace doot_gen
         private void audioMenuVgmGithubDownload_Click(object sender, EventArgs e)
         {
             string folder = Directory.GetCurrentDirectory() + "\\vgmstream\\";
-            string targetFile = folder+ "\\vgmstream-cli.exe";
+            string targetFile = folder + "\\vgmstream-cli.exe";
             if (!File.Exists(targetFile))
             {
-                string zip = "vgmstream-win" + (System.Environment.Is64BitOperatingSystem ? "64.zip" : ".zip"); 
-                Uri url = new Uri("https://www.github.com//vgmstream/vgmstream/releases/download/r1879/"+ zip);
+                string zip = "vgmstream-win" + (System.Environment.Is64BitOperatingSystem ? "64.zip" : ".zip");
+                Uri url = new Uri("https://www.github.com//vgmstream/vgmstream/releases/download/r1879/" + zip);
                 using (var client = new WebClient())
                 {
                     client.DownloadFile(url, zip);
@@ -524,6 +505,34 @@ namespace doot_gen
 
             buttonPlayNewFile.Enabled = false;
             buttonRemoveNewFile.Enabled = false;
+        }
+
+        private void HelpLogToFile_Click(object sender, EventArgs e)
+        {
+            if (HelpLogToFile.Checked)
+            {
+                Logger.CurrentSinks().Where(s => s is FileLogger).FirstOrNone().DoIfPresent(l => Logger.RemoveSink(l));
+            }
+            else
+            {
+                StringBuilder builder = new StringBuilder();
+                builder.AppendLine("MH-DOOT-GEN-LOG: ");
+                builder.Append("Time:         ");
+                builder.AppendLine(DateTime.Now.ToString("HH-mm-ss"));
+                builder.Append("WWiseConsole: ");
+                builder.AppendLine(config.GetPathOpt(ConfigPath.Console).ValueOr("N/A"));
+                builder.Append("WWiseProject: ");
+                builder.AppendLine(config.GetPathOpt(ConfigPath.Project).ValueOr("N/A"));
+                builder.Append("GamePath:     ");
+                builder.AppendLine(config.GetPathOpt(ConfigPath.GameFiles).ValueOr("N/A"));
+                builder.Append("bnkextr:      ");
+                builder.AppendLine(config.GetPathOpt(ConfigPath.BnkExtr).ValueOr("N/A"));
+                builder.Append("vgmstream:    ");
+                builder.AppendLine(config.GetPathOpt(ConfigPath.VGMStream).ValueOr("N/A"));
+                builder.AppendLine("");
+                Logger.AddSink(new FileLogger(Logger.Defaut, builder.ToString().Some()));
+            }
+            HelpLogToFile.Checked = !HelpLogToFile.Checked;
         }
     }
 }
