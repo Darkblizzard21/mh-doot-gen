@@ -87,4 +87,4 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: mh-doot-gen-$${{matrix.configuration}}
-        path: .\$${{matrix.configuration}}
+        path: .\${{matrix.configuration}}
