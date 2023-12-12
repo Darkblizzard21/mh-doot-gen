@@ -156,7 +156,7 @@ namespace doot_gen.doot_gen
                 if (!File.Exists(wavPath))
                 {
                     // extract files
-                    Process process = Process.Start(bnkextrPath, bankPath);
+                    Process process = Process.Start(bnkextrPath, bankPath.WrapInEnumrable());
                     process.WaitForExit();
                     if (process.ExitCode != 0)
                     {
@@ -168,7 +168,7 @@ namespace doot_gen.doot_gen
                     foreach (var item in Directory.EnumerateFiles(bankFolder))
                     {
                         Logger.Info("Convert File: \"" + item + "\"");
-                        processes.Add(Process.Start(vgmstreamPath, item));
+                        processes.Add(Process.Start(vgmstreamPath,item.WrapInEnumrable()));
                     };
                     processes.ForEach(p => p.WaitForExit());
                     processes.ForEach(p =>
