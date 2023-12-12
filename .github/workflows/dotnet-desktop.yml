@@ -82,3 +82,9 @@ jobs:
         dotnet restore .\doot-gen\doot-gen.csproj
     - name: Build
       run: dotnet build .\doot-gen\doot-gen.csproj -o .\$${{matrix.configuration}} -c $${{matrix.configuration}}
+
+    - name: Upload
+      uses: actions/upload-artifact@v3
+      with:
+        name: mh-doot-gen-$${{matrix.configuration}}
+        path: .\$${{matrix.configuration}}
