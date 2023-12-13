@@ -1,4 +1,5 @@
-﻿using RingingBloom.WWiseTypes;
+﻿using doot_gen.util;
+using RingingBloom.WWiseTypes;
 using System.Diagnostics;
 using System.IO.Compression;
 using System.Text;
@@ -21,8 +22,7 @@ namespace doot_gen.doot_gen
             argsBuilder.AppendFormat("\"{0}\" ", wwiseProjectPath);
             argsBuilder.AppendFormat("--output \"{0}\" ", outputPath);
             argsBuilder.AppendFormat("--source-file \"{0}\" ", sourcesPath);
-            Process process = Process.Start(wwiseConsolePath, argsBuilder.ToString());
-            process.WaitForExit();
+            new ProcessHandle().Start(wwiseConsolePath, argsBuilder.ToString()).WaitForExit();
 
             // create banks
             outputPath += "Windows/";

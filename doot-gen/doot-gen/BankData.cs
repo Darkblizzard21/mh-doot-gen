@@ -156,39 +156,20 @@ namespace doot_gen.doot_gen
                 if (!File.Exists(wavPath))
                 {
                     // extract files
-                    ProcessStartInfo processStartInfo = new ProcessStartInfo();
-                    processStartInfo.FileName = bnkextrPath;
-                    processStartInfo.Arguments = bankPath;
-                    processStartInfo.UseShellExecute = false;
-                    processStartInfo.RedirectStandardOutput = true;
-                    processStartInfo.CreateNoWindow = true;
-                    Process process = Process.Start(startInfo: processStartInfo);
-                    process.WaitForExit();
-                    if (process.ExitCode != 0)
-                    {
-                        Logger.Warn("Extracting file  \"" + wavPath + "\" failed with exit code " + process.ExitCode.ToString());
-                    }
-                    string? line;
-                    while ((line = process.StandardOutput.ReadLine()) != null)
-                    {
-                        Logger.Log(line, process.ExitCode == 0 ? LogLevel.Info : LogLevel.Warn);
-                    }
+                    ProcessHandle processHandle = new ProcessHandle();
+                    processHandle.SetupFailMessage("Extracting file  \"" + wavPath + "\" failed´")
+                        .Start(bnkextrPath, "\"" + bankPath + "\"")
+                        .WaitForExit();
 
                     // convert files
-                    List<Process> processes = new List<Process>();
+                    List<ProcessHandle> processes = new List<ProcessHandle>();
                     foreach (var item in Directory.EnumerateFiles(bankFolder))
                     {
                         Logger.Info("Convert File: \"" + item + "\"");
-                        processes.Add(Process.Start(vgmstreamPath,item.WrapInEnumrable()));
+                        processes.Add(new ProcessHandle().Start(vgmstreamPath,"\""+item.WrapInEnumrable()+"\""));
                     };
                     processes.ForEach(p => p.WaitForExit());
-                    processes.ForEach(p =>
-                    {
-                        if (p.ExitCode != 0)
-                        {
-                            Logger.Info("Convert File: A file failed with exit code: " + p.ExitCode.ToString());
-                        }
-                    });
+
                     // clean up wems
                     foreach (var item in Directory.EnumerateFiles(bankFolder).Where(f => f.EndsWith(".wem")))
                     {
