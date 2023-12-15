@@ -71,6 +71,8 @@ namespace doot_gen
                 hornSelection.Items.Clear();
                 avaibleHorns.Clear();
 
+                hornSelection.Items.Add("Select own BNK files (experimental)");
+
                 labelGameFiles.Text = hasValue ? value : "N/A";
                 if (hasValue)
                 {
@@ -87,10 +89,6 @@ namespace doot_gen
                         hornSelection.Items.Add(wrapper);
                         hornSelection.AutoCompleteCustomSource.Add(wrapper.ToString());
                     }
-                }
-                else
-                {
-                    hornSelection.Items.Add("Select GamePath before selecting Horn");
                 }
             });
             config.SetUIAction(ConfigPath.BnkExtr, (bool hasValue, string value) =>
@@ -269,19 +267,46 @@ namespace doot_gen
         {
             bankFiles.Clear();
             fileTree.Nodes.Clear();
+            IEnumerable<string> files = Enumerable.Empty<string>();
 
+            if (hornSelection.SelectedItem == null) return;
+
+            bool isHorn = false;
             ToggleModEditVisiblity(false);
             if (hornSelection.SelectedItem is HornWrapper
                 && config.PathAvailible(ConfigPath.GameFiles))
             {
+                isHorn = true;
                 ToggleModEditVisiblity(true);
                 string soundPath = config.GetPath(ConfigPath.GameFiles) + "\\natives\\STM\\Sound\\Wwise\\";
                 HornWrapper hornWrapper = (HornWrapper)hornSelection.SelectedItem;
-                foreach (var file in hornWrapper.horn.ExistingHornFiles(soundPath))
+                files = hornWrapper.horn.ExistingHornFiles(soundPath);
+            }
+            else
+            {
+                OpenFileDialog dialog = new OpenFileDialog();
+                if (config.TryGetPath(ConfigPath.GameFiles, out string gPath))
+                {
+                    dialog.InitialDirectory = gPath + "\\natives\\STM\\Sound\\Wwise\\";
+                }
+                dialog.Multiselect = true;
+                dialog.CheckFileExists = true;
+                dialog.Filter = "WWise bnk (*)|*";
+                dialog.Title = "Select Bank Files";
+                DialogResult res = dialog.ShowDialog();
+                if (res != DialogResult.OK) return;
+                ToggleModEditVisiblity(true);
+                files = dialog.FileNames;
+            }
+
+            try
+            {
+                foreach (var file in files)
                 {
                     BinaryReader readFile = new BinaryReader(new FileStream(file, FileMode.Open), Encoding.ASCII);
                     NBNKFile nbnk = new NBNKFile(readFile, SupportedGames.MHRise);
-                    if (nbnk.DataIndex == null) continue;
+                    if (nbnk.DataIndex == null && isHorn) continue;
+                    if (nbnk.DataIndex == null && !isHorn) throw new Exception("DataIndex in one off the selected files was null.");
                     string fileName = Path.GetFileName(file);
                     bankFiles.Add(fileName, new BankData(fileName, nbnk));
                     readFile.Close();
@@ -290,7 +315,6 @@ namespace doot_gen
                     fileNode.Text = fileName;
                     fileNode.Name = fileName;
                     fileNode.Expand();
-
 
                     nbnk.DataIndex.wemList.ForEach(x =>
                     {
@@ -302,19 +326,23 @@ namespace doot_gen
                     });
                     fileTree.Nodes.Add(fileNode);
                 };
-
             }
-
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                bankFiles.Clear();
+                fileTree.Nodes.Clear();
+                hornSelection.SelectedItem = null;
+            }
         }
 
         private void ExportModButton_Click(object sender, EventArgs e)
         {
-            if (!(hornSelection.SelectedItem is HornWrapper))
+            if (hornSelection.SelectedItem == null)
             {
                 Logger.Warn("No horn selected!");
                 return;
             }
-            Horns horn = ((HornWrapper)hornSelection.SelectedItem).horn;
             if (!config.TryGetPath(ConfigPath.Console, out string consolePath) || !File.Exists(consolePath))
             {
                 Logger.Warn("Current path not vaild!\n" + consolePath);
@@ -338,7 +366,16 @@ namespace doot_gen
             }
 
             var cursorOverride = new CursorOverride(Cursors.WaitCursor);
-            ModExporter.ExportMod(horn, bankFiles.Values, dialog.SelectedPath, consolePath, projectPath);
+
+            if (hornSelection.SelectedItem is HornWrapper)
+            {
+                Horns horn = ((HornWrapper)hornSelection.SelectedItem).horn;
+                ModExporter.ExportMod(horn, bankFiles.Values, dialog.SelectedPath, consolePath, projectPath);
+            }
+            else
+            {
+                ModExporter.ExportMod(bankFiles.Values, dialog.SelectedPath, consolePath, projectPath);
+            }
         }
 
         private void audioMenuBNKSelect_Click(object sender, EventArgs e)
