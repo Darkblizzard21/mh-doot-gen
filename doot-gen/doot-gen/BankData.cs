@@ -104,6 +104,7 @@ namespace doot_gen.doot_gen
             });
 
             string nbnkPath = Path.Combine(exportPath, name);
+            if(File.Exists(nbnkPath)) { File.Delete(nbnkPath); }
             file.ExportNBNK(new BinaryWriter(new FileStream(nbnkPath, FileMode.OpenOrCreate)));
             
         }

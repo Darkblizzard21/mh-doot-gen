@@ -1,4 +1,7 @@
-﻿using RingingBloom.WWiseTypes;
+﻿using doot_gen.util;
+using Optional;
+using Optional.Unsafe;
+using RingingBloom.WWiseTypes;
 using System.Diagnostics;
 using System.IO.Compression;
 using System.Text;
@@ -7,15 +10,31 @@ namespace doot_gen.doot_gen
 {
     static internal class ModExporter
     {
+
+
         public static void ExportMod(Horns horn, IEnumerable<BankData> bankEnum, string outputFolder, string wwiseConsolePath, string wwiseProjectPath)
         {
+            ExportMod(horn.Some(), bankEnum, outputFolder, wwiseConsolePath, wwiseProjectPath);
+        }
+
+
+        public static void ExportMod(IEnumerable<BankData> bankEnum, string outputFolder, string wwiseConsolePath, string wwiseProjectPath)
+        {
+            ExportMod(Option.None<Horns>(), bankEnum, outputFolder, wwiseConsolePath, wwiseProjectPath);
+        }
+
+        private static void ExportMod(Option<Horns> horn, IEnumerable<BankData> bankEnum, string outputFolder, string wwiseConsolePath, string wwiseProjectPath)
+        {
+            Logger.Info("Starting Exporting Mod:");
             var banks = bankEnum.ToList();
             // convert files to wem
             string outputPath = Directory.GetCurrentDirectory() + "/tmp/";
             string sourcesPath = Directory.GetCurrentDirectory() + "/tmp/Wems.wsources";
 
+            Logger.Info("Collecting WSources");
             WSource.MakeWSource(sourcesPath, banks.SelectMany(bank => bank.GetReplacementFilePaths()).ToHashSet().ToList());
 
+            Logger.Info("Started conversion process ({0})", wwiseConsolePath);
             var argsBuilder = new StringBuilder();
             argsBuilder.Append("convert-external-source ");
             argsBuilder.AppendFormat("\"{0}\" ", wwiseProjectPath);
@@ -28,14 +47,22 @@ namespace doot_gen.doot_gen
             outputPath += "Windows/";
             string modPath = outputPath + "mod\\";
             string modSoundPath = modPath + "natives\\STM\\Sound\\Wwise";
-            if (!Directory.Exists(modSoundPath))
-            {
+            if (horn.HasValue && !Directory.Exists(modSoundPath))
+            { 
+                Logger.Info("Creating Directory {0}", modSoundPath);
                 Directory.CreateDirectory(modSoundPath);
             }
 
-            banks.ForEach(bnk => bnk.ExportReplacementsTo(modSoundPath, outputPath));
+            Logger.Info("Started exporting bnks");
+            banks.ForEach(bnk => bnk.ExportReplacementsTo(horn.HasValue ? modSoundPath : outputFolder, outputPath));
+            if (!horn.HasValue)
+            {
+                Logger.Info("Exported Mod successfull without horn!");
+                return;
+            }
             // create infos
             {
+                Logger.Info("Creating Modinfo");
                 string modinfo = modPath + "modinfo.ini";
                 if (File.Exists(modinfo))
                 {
@@ -46,7 +73,7 @@ namespace doot_gen.doot_gen
                 {
                     // Add some text to file
 
-                    byte[] name = new UTF8Encoding(true).GetBytes("name=HH " + horn.GetHornName() + " Sound Replacement\n");
+                    byte[] name = new UTF8Encoding(true).GetBytes("name=HH " + horn.ValueOrFailure().GetHornName() + " Sound Replacement\n");
                     fs.Write(name, 0, name.Length);
                     byte[] description = new UTF8Encoding(true).GetBytes("description=Swaps the melodies of this Hunting Horn\n");
                     fs.Write(description, 0, description.Length);
@@ -58,6 +85,7 @@ namespace doot_gen.doot_gen
             }
             // copy image //todo add auto generated images
             {
+                Logger.Info("Adding Image through copy");
                 string imgDest = modPath + "screenshot.png";
                 string imgSrc = Directory.GetCurrentDirectory() + "\\mhdootgen.png";
                 if (!File.Exists(imgSrc)) { imgSrc = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName + "\\mhdootgen.png"; }
@@ -67,14 +95,17 @@ namespace doot_gen.doot_gen
                 }
             }
             // zip together & save zip
-            string zipPath = "HH " + horn.GetHornName() + " Sound Replacement.zip";
+            string zipPath = "HH " + horn.ValueOrFailure().GetHornName() + " Sound Replacement.zip";
             zipPath.Replace(' ', '-');
             zipPath = Path.Combine(outputFolder ,zipPath);
+            Logger.Info("Zipping Mod to {0}", zipPath);
             if (File.Exists(zipPath)) File.Delete(zipPath);
             ZipFile.CreateFromDirectory(modPath, zipPath);
             // clear tmp files
+            Logger.Info("Clearing temporary files");
             File.Delete(sourcesPath);
             Directory.Delete(outputPath, true);
+            Logger.Info("Exported Mod successfull with horn!");
         }
     }
 }

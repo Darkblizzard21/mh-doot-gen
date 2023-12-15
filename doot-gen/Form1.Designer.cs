@@ -286,28 +286,28 @@
             // HelpGitHubPage
             // 
             HelpGitHubPage.Name = "HelpGitHubPage";
-            HelpGitHubPage.Size = new Size(180, 22);
+            HelpGitHubPage.Size = new Size(141, 22);
             HelpGitHubPage.Text = "GitHub Page";
             HelpGitHubPage.Click += HelpGitHubPage_Click;
             // 
             // HelpHornIds
             // 
             HelpHornIds.Name = "HelpHornIds";
-            HelpHornIds.Size = new Size(180, 22);
+            HelpHornIds.Size = new Size(141, 22);
             HelpHornIds.Text = "HornIds";
             HelpHornIds.Click += HelpHornIds_Click;
             // 
             // HelpModdingWiki
             // 
             HelpModdingWiki.Name = "HelpModdingWiki";
-            HelpModdingWiki.Size = new Size(180, 22);
+            HelpModdingWiki.Size = new Size(141, 22);
             HelpModdingWiki.Text = "ModingWiki";
             HelpModdingWiki.Click += HelpModdingWiki_Click;
             // 
             // HelpLogToFile
             // 
             HelpLogToFile.Name = "HelpLogToFile";
-            HelpLogToFile.Size = new Size(180, 22);
+            HelpLogToFile.Size = new Size(141, 22);
             HelpLogToFile.Text = "Log to File";
             HelpLogToFile.Click += HelpLogToFile_Click;
             // 
